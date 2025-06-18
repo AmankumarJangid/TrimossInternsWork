@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 // Register new user
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, address, role } = req.body;
 
     // Validate required fields
     if (!name || !email || !password) {
@@ -25,7 +25,7 @@ export const registerUser = async (req, res) => {
     }
 
     // Create new user
-    const user = new User({ name, email, password });
+    const user = new User({ name, email, password, address, role });
     await user.save();
 
     // Generate tokens
@@ -236,6 +236,10 @@ export const updateUserProfile = async (req, res) => {
           message: 'Email already exists'
         });
       }
+    }
+
+    if ( req.body.address){
+      user.address = req.body.address;
     }
 
     const user = await User.findByIdAndUpdate(
