@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -50,6 +52,9 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/carts', cartRoutes);
+app.use('/api/products', productRoutes);
+
 
 // Health check route
 app.get('/health', (req, res) => {

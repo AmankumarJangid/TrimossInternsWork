@@ -1,0 +1,168 @@
+{
+    "request for product add": {
+        "name": "Mosaic1",
+        "sku": "PRODUCT-1",
+        "description": {
+            "short": "Test product"
+        },
+        "category": {
+            "primary": "wall-tiles"
+        },
+        "mosaicType": "sheet-mounted",
+        "pattern": "custom",
+        "dimensions": {
+            "individual": {
+                "length": 2000,
+                "width": 2000,
+                "thickness": 50
+            }
+        },
+        "images": {
+            "primary": "https://example.com/image.jpg"
+        },
+        "pricing": {
+            "basePrice": 10.99
+        },
+        "inventory": {
+            "quantity": 50
+        },
+        "supplier": {
+            "name": "Default Supplier"
+        }
+    },
+    "response for login user": {
+        "success": true,
+        "message": "Login successful",
+        "data": {
+            "user": {
+                "_id": "6857acd787072df12081f9fd",
+                "name": "Alice Groove",
+                "email": "new@gmail.com",
+                "address": "",
+                "role": "user",
+                "isActive": true,
+                "avatar": null,
+                "createdAt": "2025-06-22T07:12:23.283Z",
+                "updatedAt": "2025-06-22T07:14:52.731Z"
+            },
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NTdhY2Q3ODcwNzJkZjEyMDgxZjlmZCIsImVtYWlsIjoibmV3QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzUwNTc2NDkyLCJleHAiOjE3NTA1NzczOTJ9.mft22KW0xnGEA6h5X0j7woAhiwb6wzyvq4gjatRlzAU"
+        }
+    },
+    "response for adding Product only be excessed by Admin": {
+        "success": true,
+        "message": "Product created successfully",
+        "data": {
+            "name": "Mosaic1",
+            "sku": "PRODUCT-1",
+            "description": {
+                "short": "Test product"
+            },
+            "category": {
+                "primary": "wall-tiles"
+            },
+            "mosaicType": "sheet-mounted",
+            "pattern": "custom",
+            "dimensions": {
+                "individual": {
+                    "length": 2000,
+                    "width": 2000,
+                    "thickness": 50,
+                    "unit": "mm"
+                }
+            },
+            "images": {
+                "primary": "https://example.com/image.jpg",
+                "gallery": [],
+                "technical": [],
+                "roomScenes": []
+            },
+            "pricing": {
+                "basePrice": 10.99,
+                "currency": "USD",
+                "pricePerUnit": "sqft",
+                "minimumOrderQuantity": 1
+            },
+            "inventory": {
+                "quantity": 50,
+                "lowStockThreshold": 10,
+                "status": "in-stock"
+            },
+            "applications": {
+                "suitable": [],
+                "notSuitable": []
+            },
+            "supplier": {
+                "name": "Default Supplier",
+                "leadTime": 14
+            },
+            "seo": {
+                "keywords": [],
+                "slug": "mosaic1"
+            },
+            "isActive": true,
+            "isFeatured": false,
+            "tags": [],
+            "relatedProducts": [],
+            "reviews": {
+                "averageRating": 0,
+                "totalReviews": 0
+            },
+            "salesData": {
+                "totalSold": 0
+            },
+            "_id": "6857b603324a46441cb321bd",
+            "colorVariants": [],
+            "certifications": [],
+            "createdAt": "2025-06-22T07:51:31.973Z",
+            "updatedAt": "2025-06-22T07:51:31.973Z",
+            "__v": 0,
+            "pricePerSqFt": 10.99,
+            "inventoryStatus": "in-stock",
+            "id": "6857b603324a46441cb321bd"
+        }
+    },
+    "request for cart": {
+       "forsingleitem" : {
+    "productId": "6857b603324a46441cb321bd",
+    "quantity": 3
+},
+        "items": [
+            {
+                "product": "6857b603324a46441cb321bd",
+                "quantity": 3
+            }
+        ]
+    },
+
+    "response of cart added" : {
+    "success": true,
+    "message": "Item added to cart",
+    "data": {
+        "_id": "6857bff65e56a6ff51410d61",
+        "user": "6857acd787072df12081f9fd",
+        "items": [
+            {
+                "product": {
+                    "category": {
+                        "primary": "wall-tiles"
+                    },
+                    "_id": "6857b603324a46441cb321bd",
+                    "name": "Mosaic1",
+                    "pricePerSqFt": null,
+                    "inventoryStatus": "in-stock",
+                    "id": "6857b603324a46441cb321bd"
+                },
+                "quantity": 15,
+                "price": 10.99,
+                "totalPrice": 164.85
+            }
+        ],
+        "totalAmount": 164.85,
+        "totalItems": 15,
+        "isActive": true,
+        "createdAt": "2025-06-22T08:33:58.168Z",
+        "updatedAt": "2025-06-22T10:10:18.666Z",
+        "__v": 0
+    }
+}
+}
