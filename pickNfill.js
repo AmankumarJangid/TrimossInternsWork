@@ -319,19 +319,6 @@ function pointInTriangle(px, py, verts) {
   let b3 = sign([px, py], verts[2], verts[0]) < 0.0;
   return ((b1 === b2) && (b2 === b3));
 }
-
-/*canvas.addEventListener('click', function(e) {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  for (let i = triangles.length - 1; i >= 0; i--) {
-    if (pointInTriangle(x, y, triangles[i].verts)) {
-      triangles[i].color = colorPicker.value;
-      redrawTriangles();
-      break;
-    }
-  }
-});*/
 canvas.addEventListener('click', function(e) {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
