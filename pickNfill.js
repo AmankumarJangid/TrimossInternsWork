@@ -1,3 +1,78 @@
+document.body.innerHTML = '';
+
+const welcomeBox = document.createElement('div');
+welcomeBox.style.display = 'flex';
+welcomeBox.style.flexDirection = 'column';
+welcomeBox.style.alignItems = 'center';
+welcomeBox.style.justifyContent = 'center';
+welcomeBox.style.background = '#fff';
+welcomeBox.style.boxShadow = '0 4px 24px rgba(60,60,90,0.08)';
+welcomeBox.style.borderRadius = '12px';
+welcomeBox.style.padding = '40px 32px 32px 32px';
+welcomeBox.style.marginTop = '80px';
+welcomeBox.style.fontFamily = 'consolas';
+welcomeBox.style.fontSize = '1.2rem';
+welcomeBox.style.minWidth = '340px';
+
+const hello = document.createElement('div');
+hello.textContent = 'Hello! Welcome.';
+hello.style.fontWeight = 'bold';
+hello.style.fontSize = '1.4rem';
+hello.style.marginBottom = '18px';
+
+const projectLabel = document.createElement('label');
+projectLabel.textContent = 'Project name: ';
+projectLabel.style.marginBottom = '8px';
+
+const projectInput = document.createElement('input');
+projectInput.type = 'text';
+projectInput.placeholder = 'Enter project name';
+projectInput.style.fontFamily = 'consolas';
+projectInput.style.fontSize = '1.1rem';
+projectInput.style.padding = '4px 10px';
+projectInput.style.marginBottom = '12px';
+projectInput.style.border = '1px solid #ccc';
+projectInput.style.borderRadius = '5px';
+projectInput.style.width = '180px';
+
+const openBtn = document.createElement('button');
+openBtn.textContent = 'Open Project';
+openBtn.style.fontFamily = 'consolas';
+openBtn.style.fontSize = '1.1rem';
+openBtn.style.margin = '0 8px 0 0';
+
+const newBtn = document.createElement('button');
+newBtn.textContent = 'New Project';
+newBtn.style.fontFamily = 'consolas';
+newBtn.style.fontSize = '1.1rem';
+
+const msg = document.createElement('div');
+msg.style.color = '#d00';
+msg.style.marginTop = '12px';
+msg.style.fontSize = '1.05rem';
+
+welcomeBox.appendChild(hello);
+welcomeBox.appendChild(projectLabel);
+welcomeBox.appendChild(projectInput);
+welcomeBox.appendChild(openBtn);
+welcomeBox.appendChild(newBtn);
+welcomeBox.appendChild(msg);
+
+document.body.appendChild(welcomeBox);
+
+let triangles = [];
+let ctx, cols = 0, rows = 0, lineWidthPx = 3.78;
+const side = 37.8;
+const h = side * Math.sqrt(3)/2;
+let currentProjectName = '';
+let isSaved = true;
+
+//Main App
+function loadMainApp(projectName, loadExisting) {
+  document.body.innerHTML = ''; // Clear welcome box
+  currentProjectName = projectName;
+  document.title = projectName;
+
 document.body.style.height = '100vh';
 document.body.style.margin = '0';
 document.body.style.display = 'flex';
@@ -37,9 +112,8 @@ gridInput.style.border = '1px solid #ccc';
 gridInput.style.borderRadius = '5px';
 gridInput.style.padding = '2px 6px';
 
-//Line width
 const lineLabel = document.createElement('label');
-lineLabel.textContent = 'Line Width(mm): ';
+lineLabel.textContent = 'Stencil(mm): ';
 lineLabel.style.fontFamily = 'consolas';
 lineLabel.style.fontSize = '1.1rem';
 lineLabel.style.marginRight = '8px';
@@ -57,7 +131,6 @@ lineInput.style.border = '1px solid #ccc';
 lineInput.style.borderRadius = '5px';
 lineInput.style.padding = '2px 6px';
 
-//Color picker
 const colorLabel = document.createElement('label');
 colorLabel.textContent = 'Color: ';
 colorLabel.style.fontFamily = 'consolas';
@@ -85,6 +158,12 @@ hexDisplay.style.background = '#f3f3f3';
 hexDisplay.style.borderRadius = '5px';
 hexDisplay.style.border = '1px solid #ddd';
 
+const saveBtn = document.createElement('button');
+saveBtn.textContent = 'Save Project';
+saveBtn.style.marginRight = '8px';
+saveBtn.style.fontFamily = 'consolas';
+saveBtn.style.fontSize = '1.1rem';
+
 //Assemble controls
 controls.appendChild(gridLabel);
 controls.appendChild(gridInput);
@@ -93,6 +172,7 @@ controls.appendChild(lineInput);
 controls.appendChild(colorLabel);
 controls.appendChild(colorPicker);
 controls.appendChild(hexDisplay);
+controls.appendChild(saveBtn);
 
 //Canvas
 const canvas = document.createElement('canvas');
@@ -111,11 +191,37 @@ container.appendChild(canvas);
 document.body.innerHTML = '';
 document.body.appendChild(container);
 
-//Triangle Grid Logic
-const ctx = canvas.getContext('2d');
-const side = 37.8; // 10mm in px
-const h = side * Math.sqrt(3) / 2;
-let triangles = [];
+ctx = canvas.getContext('2d');
+
+//Restore saved file
+ if (loadExisting) {
+  const key = 'pickNfill_' + projectName;
+  const data = localStorage.getItem(key);
+  if (data) {
+    try {
+      const obj = JSON.parse(data);
+      gridInput.value = obj.gridInput || '';
+      lineInput.value = obj.lineInput || '';
+      parseLineWidth();
+      calculateGridFromArea(); // This generates the grid and fills triangles[]
+      // Now restore triangle colors
+      if (obj.triangles && obj.triangles.length === triangles.length) {
+        for (let i = 0; i < triangles.length; i++) {
+          triangles[i].color = obj.triangles[i].color;
+        }
+      }
+      redrawTriangles();
+      isSaved = true;
+    } catch (e) {
+      console.log(e);
+      alert('Failed to load project!');
+    }
+  }
+} else {
+  calculateGridFromArea();
+  parseLineWidth();
+  drawGrid();
+}
 
 function parseLineWidth() {
   let mm = parseFloat(lineInput.value);
@@ -214,7 +320,7 @@ function pointInTriangle(px, py, verts) {
   return ((b1 === b2) && (b2 === b3));
 }
 
-canvas.addEventListener('click', function(e) {
+/*canvas.addEventListener('click', function(e) {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
@@ -225,9 +331,26 @@ canvas.addEventListener('click', function(e) {
       break;
     }
   }
+});*/
+canvas.addEventListener('click', function(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  for (let i = triangles.length - 1; i >= 0; i--) {
+    if (pointInTriangle(x, y, triangles[i].verts)) {
+      // Toggle: if already filled, unfill; else fill
+      if (triangles[i].color) {
+        triangles[i].color = null;
+      } else {
+        triangles[i].color = colorPicker.value;
+      }
+      redrawTriangles();
+      break;
+    }
+  }
 });
 
-//Dynamic hex code
+//Dynamic HEX code
 colorPicker.addEventListener('input', function() {
   hexDisplay.textContent = colorPicker.value.toUpperCase();
 });
@@ -240,7 +363,82 @@ lineInput.addEventListener('input', function() {
   drawGrid();
 });
 
-//Initial parse and draw
-parseGridInput();
-parseLineWidth();
-drawGrid();
+saveBtn.addEventListener('click', function() {
+  const name = currentProjectName;
+  if (!name) {
+    alert('Not a project name!');
+    return;
+  }
+  isSaved = true;
+  const data = {
+    gridInput: gridInput.value,
+    lineInput: lineInput.value,
+    triangles: triangles.map(t => ({ color: t.color })),
+  };
+  localStorage.setItem('pickNfill_' + name, JSON.stringify(data));
+  alert('Project saved!');
+});
+
+//Unsave on change
+function markUnsaved() { isSaved = false; }
+gridInput.addEventListener('input', markUnsaved);
+lineInput.addEventListener('input', markUnsaved);
+colorPicker.addEventListener('input', markUnsaved);
+canvas.addEventListener('click', markUnsaved);
+
+window.addEventListener('beforeunload', function(e) {
+  if (!isSaved) {
+    e.preventDefault();
+    e.returnValue = 'You have unsaved changes. Save before leaving?';
+    return e.returnValue;
+  }
+});
+
+if(!loadExisting){
+    calculateGridFromArea();
+    parseLineWidth();
+    drawGrid();
+  }
+}
+
+openBtn.onclick = function() {
+  msg.textContent = '';
+  const name = projectInput.value.trim();
+  if (!name) return;
+  const key = 'pickNfill_' + name;
+  const data = localStorage.getItem(key);
+  if (data) {
+    loadMainApp(name, true);
+  } else {
+    msg.textContent = 'No such file exists!';
+  }
+};
+
+newBtn.onclick = function() {
+    msg.textContent = '';
+  const name = projectInput.value.trim();
+  if (!name) return;
+  const key = 'pickNfill_' + name;
+  const data = localStorage.getItem(key);
+  if(!data){
+      loadMainApp(name, false);
+    }else{
+      msg.textContent='project already exists!';
+    }
+}
+
+function updateBtnState() {
+  const hasName = !!projectInput.value.trim();
+  openBtn.disabled = !hasName;
+  newBtn.disabled = !hasName;
+}
+projectInput.addEventListener('input', updateBtnState);
+updateBtnState();
+
+  projectInput.focus();
+projectInput.addEventListener('keyup', function(e) {
+  if (e.key === 'Enter') openBtn.click();
+});
+projectInput.addEventListener('input', function() {
+  msg.textContent = '';
+});
