@@ -1,27 +1,28 @@
-import { object, string, boolean, array, number } from 'joi';
+import joi from 'joi';
+// const { object, string, boolean, array, number } = pkg;
 
-const addressSchema = object({
-  street: string().required(),
-  city: string().required(),
-  state: string().allow(''),
-  postalCode: string().required(),
-  countryCode: string().length(2).required(),
-  residential: boolean().default(false)
+const addressSchema = joi.object({
+  street: joi.string().required(),
+  city: joi.string().required(),
+  state: joi.string().allow(''),
+  postalCode: joi.string().required(),
+  countryCode: joi.string().length(2).required(),
+  residential: joi.boolean().default(false)
 });
 
-const validateRateRequest = (req, res, next) => {
-  const schema = object({
+export const validateRateRequest = (req, res, next) => {
+  const schema = joi.object({
     origin: addressSchema.required(),
     destination: addressSchema.required(),
-    packages: array().items(object({
-      weight: number().positive().required(),
-      dimensions: object({
-        length: number().positive().required(),
-        width: number().positive().required(),
-        height: number().positive().required()
+    packages: joi.array().items(object({
+      weight: joi.number().positive().required(),
+      dimensions: joi.object({
+        length: joi.number().positive().required(),
+        width: joi.number().positive().required(),
+        height: joi.number().positive().required()
       }).required()
     })).min(1).required(),
-    serviceType: string().optional()
+    serviceType: joi.string().optional()
   });
 
   const { error } = schema.validate(req.body);
@@ -34,48 +35,48 @@ const validateRateRequest = (req, res, next) => {
   next();
 };
 
-const validateShipmentRequest = (req, res, next) => {
-  const schema = object({
-    shipper: object({
-      name: string().required(),
-      company: string().required(),
-      phone: string().required(),
+export const validateShipmentRequest = (req, res, next) => {
+  const schema = joi.object({
+    shipper: joi.object({
+      name: joi.string().required(),
+      company: joi.string().required(),
+      phone: joi.string().required(),
       address: addressSchema.required()
     }).required(),
-    recipient: object({
-      name: string().required(),
-      company: string().allow(''),
-      phone: string().required(),
+    recipient: joi.object({
+      name: joi.string().required(),
+      company: joi.string().allow(''),
+      phone: joi.string().required(),
       address: addressSchema.required()
     }).required(),
-    packages: array().items(object({
-      weight: number().positive().required(),
-      dimensions: object({
-        length: number().positive().required(),
-        width: number().positive().required(),
-        height: number().positive().required()
+    packages: joi.array().items(object({
+      weight: joi.number().positive().required(),
+      dimensions: joi.object({
+        length: joi.number().positive().required(),
+        width: joi.number().positive().required(),
+        height: joi.number().positive().required()
       }).required()
     })).min(1).required(),
-    customsValue: object({
-      currency: string().length(3).required(),
-      amount: number().positive().required()
+    customsValue: joi.object({
+      currency: joi.string().length(3).required(),
+      amount: joi.number().positive().required()
     }).required(),
-    commodities: array().items(object({
-      description: string().required(),
-      countryOfManufacture: string().length(2).required(),
-      quantity: number().positive().required(),
-      quantityUnits: string().default('PCS'),
-      unitPrice: object({
-        currency: string().length(3).required(),
-        amount: number().positive().required()
+    commodities: joi.array().items(object({
+      description: joi.string().required(),
+      countryOfManufacture: joi.string().length(2).required(),
+      quantity: joi.number().positive().required(),
+      quantityUnits: joi.string().default('PCS'),
+      unitPrice: joi.object({
+        currency: joi.string().length(3).required(),
+        amount: joi.number().positive().required()
       }).required(),
-      customsValue: object({
-        currency: string().length(3).required(),
-        amount: number().positive().required()
+      customsValue: joi.object({
+        currency: joi.string().length(3).required(),
+        amount: joi.number().positive().required()
       }).required(),
-      weight: number().positive().required()
+      weight: joi.number().positive().required()
     })).min(1).required(),
-    serviceType: string().optional()
+    serviceType: joi.string().optional()
   });
 
   const { error } = schema.validate(req.body);
@@ -88,7 +89,7 @@ const validateShipmentRequest = (req, res, next) => {
   next();
 };
 
-const validateTrackingRequest = (req, res, next) => {
+export const validateTrackingRequest = (req, res, next) => {
   const trackingNumber = req.params.trackingNumber;
   if (!trackingNumber || trackingNumber.length < 10) {
     return res.status(400).json({
@@ -99,7 +100,7 @@ const validateTrackingRequest = (req, res, next) => {
   next();
 };
 
-export default {
+export default{
   validateRateRequest,
   validateShipmentRequest,
   validateTrackingRequest

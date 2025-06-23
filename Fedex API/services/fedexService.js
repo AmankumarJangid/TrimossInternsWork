@@ -1,4 +1,5 @@
-import fedexAuth from './fedexAuth.js';
+import FedExAuth from './fedexAuth.js';
+const fedexAuth = FedExAuth;
 
 class FedExService {
   constructor() {
@@ -256,4 +257,4 @@ class FedExService {
   }
 }
 
-module.exports = new FedExService();
+export default new FedExService();

@@ -44,5 +44,4 @@ class FedExAuth {
     });
   }
 }
-
-module.exports = new FedExAuth();
+export default new FedExAuth();

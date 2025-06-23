@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 // import fedexService from '../services/fedexService.js';
-import { validateRateRequest, validateShipmentRequest, validateTrackingRequest } from '../middleware/validation';
+import { validateRateRequest, validateShipmentRequest, validateTrackingRequest } from '../middleware/validation.js';
 import {
     getShippingRates,
     createShipment,
@@ -21,4 +21,4 @@ router.get('/track/:trackingNumber', validateTrackingRequest, trackShipment);
 // Validate address
 router.post('/address/validate', validateAddress);
 
-module.exports = router;
+export default router;
