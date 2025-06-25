@@ -173,6 +173,8 @@ controls.appendChild(colorLabel);
 controls.appendChild(colorPicker);
 controls.appendChild(hexDisplay);
 controls.appendChild(saveBtn);
+controls.appendChild(exportBtn);
+controls.appendChild(importBtn);
 
 //Canvas
 const canvas = document.createElement('canvas');
@@ -429,3 +431,50 @@ projectInput.addEventListener('keyup', function(e) {
 projectInput.addEventListener('input', function() {
   msg.textContent = '';
 });
+const exportBtn = document.createElement('button');
+exportBtn.textContent = 'Export Project';
+exportBtn.onclick = function() {
+  const name = currentProjectName;
+  const data = localStorage.getItem('pickNfill_' + name);
+  if (!data) {
+    alert('No project data to export!');
+    return;
+  }
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+const importBtn = document.createElement('button');
+importBtn.textContent = 'Import Project';
+importBtn.onclick = function() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const obj = JSON.parse(evt.target.result);
+        if (!obj.gridInput || !obj.lineInput || !obj.triangles) {
+          alert('Invalid project file!');
+          return;
+        }
+        const name = prompt('Enter a name for the imported project:');
+        if (!name) return;
+        localStorage.setItem('pickNfill_' + name, JSON.stringify(obj));
+        alert('Project imported as "' + name + '"!');
+      } catch (e) {
+        alert('Failed to import project!');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+};
