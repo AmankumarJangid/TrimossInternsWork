@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FedEx API Client</title>
+  <style>
+      body { font-family: sans-serif; padding: 20px; background-color: #f9f9f9; }
+    button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    #output { white-space: pre-wrap; background: #fff; padding: 15px; border: 1px solid #ccc; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>FedEx API Operations</h1>
+
+  <button id="getRates">Get Shipping Rates</button>
+  <button id="create" >Create Shipment</button>
+  
+  <div style="margin-top: 10px;">
+    <input type="text" id="trackingInput" placeholder="Enter Tracking Number" />
+    <button id="track">Track Shipment</button>
+  </div>
+  
+  <div id="output"></div>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./fedexClient.js"></script>
+</body>
+</html>
