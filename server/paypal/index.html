@@ -1,0 +1,27 @@
+<script src="https://www.paypal.com/sdk/js?client-id=Ac-yN99cekSYXQhupbfy1VlqT8HoOVJjHN3J6eY4n6tGueiNZfo-7ntUg443QKbMs5rLp1I8JHK9Hzk0"></script>
+
+<div id="paypal-button-container"></div>
+
+<script>
+  paypal.Buttons({
+    createOrder: function(data, actions) {
+      return fetch("http://localhost:3000/api/paypal/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: "9.99" }) // replace with dynamic price
+      })
+      .then(res => res.json())
+      .then(order => order.id);
+    },
+    onApprove: function(data, actions) {
+      alert(data.orderID);
+      return fetch(`http://localhost:3000/api/paypal/capture-order/${data.orderID}`, {
+        method: "POST"
+      })
+      .then(res => res.json())
+      .then(details => {
+        alert("Payment completed by " + details.payer.name.given_name);
+      });
+    }
+  }).render("#paypal-button-container");
+</script>

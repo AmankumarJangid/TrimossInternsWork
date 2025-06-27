@@ -1,0 +1,35 @@
+{
+  "name": "trimoss.ecommerce.website",
+  "version": "1.0.0",
+  "description": "\"My end server + client work\"",
+  "keywords": [
+    "\"ecommerce",
+    "trimoss",
+    "glass",
+    "glass",
+    "mosaic\""
+  ],
+  "homepage": "https://github.com/AmankumarJangid/TrimossInternsWork#readme",
+  "bugs": {
+    "url": "https://github.com/AmankumarJangid/TrimossInternsWork/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmankumarJangid/TrimossInternsWork.git"
+  },
+  "license": "ISC",
+  "author": "\"aman\"",
+  "type": "module",
+  "main": "\"./server/src/server.js\"",
+  "scripts": {
+    "dev": "concurrently 'nodemon server/src/server.js' 'nodemon server/fedex_api/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.10.0",
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
