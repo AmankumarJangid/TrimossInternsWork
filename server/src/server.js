@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import paypalRoutes from './routes/paypalRoutes.js';
+import orderRoutes from "./routes/orderRoutes.js";
 // Load environment variables
 dotenv.config();
 
@@ -63,7 +64,9 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/paypal', paypalRoutes);
+// app.use('/api/paypal', paypalRoutes);
+app.use("/api/orders", orderRoutes);
+
 
 
 // Health check route
