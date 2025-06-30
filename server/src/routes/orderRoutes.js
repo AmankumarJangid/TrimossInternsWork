@@ -11,5 +11,5 @@ router.post("/:orderId/confirm-shipment", confirmFedexShipment);
 export default router;
 
 // server/index.js or wherever routes are loaded
-import orderRoutes from "./routes/orderRoutes.js";
-app.use("/api/orders", orderRoutes);
+// import orderRoutes from "./routes/orderRoutes.js";
+// app.use("/api/orders", orderRoutes);

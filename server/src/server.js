@@ -64,7 +64,7 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/products', productRoutes);
-// app.use('/api/paypal', paypalRoutes);
+app.use('/api/paypal', paypalRoutes);
 app.use("/api/orders", orderRoutes);
 
 

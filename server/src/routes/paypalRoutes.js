@@ -11,5 +11,5 @@ export default router;
 
 
 // server/index.js or where you load all routes
-import paypalRoutes from "../paypal_api/routes/paypalRoutes.js";
-app.use("/api/paypal", paypalRoutes);
+// import paypalRoutes from "../paypal_api/routes/paypalRoutes.js";
+// app.use("/api/paypal", paypalRoutes);
