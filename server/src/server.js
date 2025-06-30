@@ -42,11 +42,30 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
+console.log("CORS ALLOWED ORIGIN =", process.env.CLIENT_URL); 
+// app.use(cors({
+//   origin: process.env.CLIENT_URL,
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
+//new cors
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     console.log("Incoming Origin:", origin);
+//     if (!origin || origin === process.env.CLIENT_URL) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("CORS policy doesn't allow access from this origin."));
+//     }
+//   },
+//   credentials: true,
+// }));
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: process.env.CLIENT_URL,
+  credentials: true
 }));
 
 // Body parsing middleware

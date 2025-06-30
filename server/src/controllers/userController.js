@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 // Register new user
 export const registerUser = async (req, res) => {
   try {
+    console.log("REQ.BODY =", req.body);
     const { name, email, password, address, role } = req.body;
 
     // Validate required fields

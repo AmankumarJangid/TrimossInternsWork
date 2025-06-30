@@ -77,15 +77,18 @@ export const getProducts = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     // Execute query
-    const products = await Product.find(query)
+    const [products, totalProducts] = await Promise.all([Product.find(query)
       .sort(sortOptions)
       .skip(skip)
       .limit(parseInt(limit))
       .populate('relatedProducts', 'name images.primary pricing.basePrice')
-      .lean();
+      .lean(),
 
     // Get total count for pagination
-    const totalProducts = await Product.countDocuments(query);
+      Product.countDocuments(query)
+    ]);
+
+
     const totalPages = Math.ceil(totalProducts / parseInt(limit));
 
     res.status(200).json({
