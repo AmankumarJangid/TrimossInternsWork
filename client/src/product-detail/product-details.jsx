@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function HandMirrorPage() {
   const [selectedType, setSelectedType] = useState("Type 1");
 
   const types = ["Type 1", "Type 2", "Type 3", "TYPE 4"];
+  const navigate = useNavigate();
+  // eslint-disable-next-line no-unused-vars
+  const [price , setPrice] = useState("200");
+
+
 
   return (
     <div className="min-h-screen bg-white text-black font-sans relative px-6 md:px-10 py-8">
@@ -72,7 +78,7 @@ export default function HandMirrorPage() {
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry.
           </p>
-          <p className="text-md mb-4 font-medium">$ (Price)</p>
+          <p className="text-md mb-4 font-medium">${price}</p>
           <div className="relative w-full max-w-[130px] mb-4">
             <select className="appearance-none w-full border border-gray-300 px-4 py-2 pr-8 rounded text-sm">
               <option>Large</option>
@@ -81,8 +87,14 @@ export default function HandMirrorPage() {
             </select>
             <ChevronDown className="absolute top-1/2 right-2 transform -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none" />
           </div>
-          <button className="w-full bg-black text-white py-2 rounded hover:bg-gray-900">
+          <button className="w-full bg-black text-white py-2 my-2 rounded hover:bg-gray-900">
             Add to Cart
+          </button>
+
+          <button
+          onClick={() => navigate('/address')}
+           className = "w-full bg-[#B8956A] text-[#350000] py-2 my-2 rounded hover:bg-[#bb8c57]">
+            BUY NOW
           </button>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import User from "../models/User.js";
-import fedexService from "../fedex_api/services/fedexService.js";
+import fedexService from "../fedexApi/services/fedexService.js";
 
 export const createOrder = async (req, res) => {
   try {

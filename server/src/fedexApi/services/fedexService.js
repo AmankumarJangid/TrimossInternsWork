@@ -191,7 +191,9 @@ class FedExService {
       })
 
       // return this.formatShipmentResponse(response.data)
+      console.log(response.data);
       return response.data;
+
     } catch (error) {
       throw new Error(
         `Shipment creation failed: ${

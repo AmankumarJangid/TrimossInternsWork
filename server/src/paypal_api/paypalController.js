@@ -38,6 +38,21 @@ export const capturePayPalPayment = async (req, res) => {
 
 export const createPayPalOrder = async (req, res) => {
   try {
+    // validate amount 
+    const amountValue = parseFloat(req.body.amount);
+    if( isNaN(amountValue) ){
+      return res.status(400).json({
+        success: false,
+        message: "Invalid amount format"
+      });
+    }
+    if (amountValue <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be greater than 0"
+      });
+    }
+    
     const accessToken = await getPayPalAccessToken();
 
     const order = await axios.post(
@@ -48,7 +63,7 @@ export const createPayPalOrder = async (req, res) => {
           {
             amount: {
               currency_code: "USD",
-              value: req.body.amount,
+              value: amountValue.toFixed(2),
             },
           },
         ],
@@ -78,6 +93,7 @@ export const createPayPalOrder = async (req, res) => {
       dbOrderId: newOrder._id
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: error.message });
   }
 };
