@@ -2,6 +2,8 @@
 import Order from "../models/Order.js";
 import axios from "axios";
 
+const base = 'https://api-m.sandbox.paypal.com'
+
 export const capturePayPalPayment = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -56,7 +58,7 @@ export const createPayPalOrder = async (req, res) => {
     const accessToken = await getPayPalAccessToken();
 
     const order = await axios.post(
-      `${process.env.PAYPAL_API_BASE}/v2/checkout/orders`,
+      `${base}/v2/checkout/orders`,
       {
         intent: "CAPTURE",
         purchase_units: [
@@ -77,31 +79,35 @@ export const createPayPalOrder = async (req, res) => {
     );
 
     // ✅ Save the Order in MongoDB
-    const newOrder = await Order.create({
-      user: req.body.userId,
-      items: req.body.items,
-      payment: {
-        method: "PayPal",
-        status: "Pending"
-      },
-      totalAmount: req.body.amount,
-      status: "Pending"
-    });
+    // const newOrder = await Order.create({
+    //   user: req.body.userId,
+    //   items: req.body.items,
+    //   payment: {
+    //     method: "PayPal",
+    //     status: "Pending"
+    //   },
+    //   totalAmount: req.body.amount,
+    //   status: "Pending"
+    // });
 
     res.status(201).json({
       paypalOrderId: order.data.id,
-      dbOrderId: newOrder._id
+      // dbOrderId: newOrder._id
     });
   } catch (error) {
-    console.log(error.message);
+    // 
+    console.log("CapturePayPalOrder : " , error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
 const getPayPalAccessToken = async () => {
+
+  console.log(process.env.PAYPAL_CLIENT_ID , " : " , process.env.PAYPAL_CLIENT_SECRET)
   const auth = Buffer.from(
-    `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`
+    `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
   ).toString("base64");
+
 
   const res = await axios.post(
     `${process.env.PAYPAL_API_BASE}/v1/oauth2/token`,

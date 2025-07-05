@@ -9,7 +9,7 @@ import LoginPage from "./pages/Login";
 import SignupPage from "./pages/SignUpPage";
 import AddressForm from "./components/addressAndPaymentForm";
 import OrderConfirmed from "./pages/OrderConfirmed";
-
+// import { PAYPAL_CLIENT_ID } from "../config";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 
@@ -28,7 +28,7 @@ function App() {
         <Route path="/product-detail" element={<ProductDetail />} />
         <Route path="/address" element={
           <PayPalScriptProvider options={{
-            "client-id": "Ac-yN99cekSYXQhupbfy1VlqT8HoOVJjHN3J6eY4n6tGueiNZfo-7ntUg443QKbMs5rLp1I8JHK9Hzk0",
+            "client-id": "Ac-yN99cekSYXQhupbfy1VlqT8HoOVJjHN3J6eY4n6tGueiNZfo-7ntUg443QKbMs5rLp1I8JHK9Hzk0" ,
             currency: "USD"
           }}>
             {/* Your other components */}

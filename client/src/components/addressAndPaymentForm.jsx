@@ -3,8 +3,17 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useState } from 'react';
 import { PayPalButtons } from '@paypal/react-paypal-js';
+import { PAYPAL_CLIENT_ID, API_BASE } from '../../config';
 
-const API_BASE = 'http://localhost:3000/api';
+
+
+
+export const api = axios.create({
+  baseURL: API_BASE || '/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
 export default function AddressForm({productPrice}) {
   const {
@@ -19,6 +28,8 @@ export default function AddressForm({productPrice}) {
   // eslint-disable-next-line no-unused-vars
   const [orderDetails, setOrderDetails] = useState(null);
   const [showPayPalButton, setShowPayPalButton] = useState(false);
+
+  
 
 
   const onSubmit = async (data) => {
@@ -57,7 +68,7 @@ export default function AddressForm({productPrice}) {
         serviceType: "INTERNATIONAL_PRIORITY"  // Optional
       };
 
-      const res = await axios.post(`${API_BASE}/fedex/rates`, payload);
+      const res = await api.post(`/fedex/rates`, payload);
       console.log(res.data);
 
       // how can I use this price to send over to the paypal where it also access base price of the product 
@@ -93,7 +104,7 @@ export default function AddressForm({productPrice}) {
 
       // });
 
-      const response = await axios.post(`${API_BASE}/paypal/create-order` , {
+      const response = await api.post(`/paypal/create-order` , {
         amount : totalAmount,
         // description : "This is amount for the product"
       });
