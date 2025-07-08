@@ -28,15 +28,14 @@ function App() {
         <Route path="/product-detail" element={<ProductDetail />} />
         <Route path="/address" element={
           <PayPalScriptProvider options={{
-            "client-id": "AbSO6qNMTHVDUIFxkmO-DoHa-nmzhtseqqBDUru5flbl_crtAwsSiD2ZQ16uZMYwUwOFrCagoGpNjN0L" ,
-            currency: "USD",
-            intent: "capture"
+            "client-id": "Ac-yN99cekSYXQhupbfy1VlqT8HoOVJjHN3J6eY4n6tGueiNZfo-7ntUg443QKbMs5rLp1I8JHK9Hzk0" ,
+            currency: "USD"
           }}>
             {/* Your other components */}
             <AddressForm productPrice={200} /> {/* Pass your actual product price */}
           </PayPalScriptProvider>
         } />
-        <Route path="/order-confirmed" element={<OrderConfirmed />} />
+        <Route path="/confirmation" element={<OrderConfirmed />} />
       </Routes>
       <Footer />
     </Router>
