@@ -2,7 +2,7 @@
 import Order from "../models/Order.js";
 import axios from "axios";
 
-const base = "https://api-m.sandbox.paypal.com";
+const base = 'https://api-m.sandbox.paypal.com'
 
 export const capturePayPalPayment = async (req, res) => {
   try {
@@ -12,10 +12,7 @@ export const capturePayPalPayment = async (req, res) => {
       payerId,
       emailAddress,
       status,
-      paidAt,
-      givenName,
-      surname,
-      updateTime,
+      paidAt
     } = req.body;
 
     const order = await Order.findById(orderId);
@@ -27,8 +24,7 @@ export const capturePayPalPayment = async (req, res) => {
       captureId,
       payerId,
       emailAddress,
-      name: `${givenName} ${surname}`,
-      paidAt: paidAt || update_time || new Date(),
+      paidAt: paidAt || new Date(),
     };
 
     if (status === "COMPLETED") {
@@ -44,21 +40,21 @@ export const capturePayPalPayment = async (req, res) => {
 
 export const createPayPalOrder = async (req, res) => {
   try {
-    // validate amount
+    // validate amount 
     const amountValue = parseFloat(req.body.amount);
-    if (isNaN(amountValue)) {
+    if( isNaN(amountValue) ){
       return res.status(400).json({
         success: false,
-        message: "Invalid amount format",
+        message: "Invalid amount format"
       });
     }
     if (amountValue <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Amount must be greater than 0",
+        message: "Amount must be greater than 0"
       });
     }
-
+    
     const accessToken = await getPayPalAccessToken();
 
     const order = await axios.post(
@@ -83,37 +79,35 @@ export const createPayPalOrder = async (req, res) => {
     );
 
     // ✅ Save the Order in MongoDB
-    const newOrder = await Order.create({
-      user: req.body.userId,
-      items: req.body.items,
-      payment: {
-        method: "PayPal",
-        status: "Pending",
-      },
-      totalAmount: req.body.amount,
-      status: "Pending",
-    });
+    // const newOrder = await Order.create({
+    //   user: req.body.userId,
+    //   items: req.body.items,
+    //   payment: {
+    //     method: "PayPal",
+    //     status: "Pending"
+    //   },
+    //   totalAmount: req.body.amount,
+    //   status: "Pending"
+    // });
 
     res.status(201).json({
       paypalOrderId: order.data.id,
-      dbOrderId: newOrder._id,
+      // dbOrderId: newOrder._id
     });
   } catch (error) {
-    //
-    console.log("CapturePayPalOrder : ", error.message);
+    // 
+    console.log("CapturePayPalOrder : " , error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
 const getPayPalAccessToken = async () => {
-  console.log(
-    process.env.PAYPAL_CLIENT_ID,
-    " : ",
-    process.env.PAYPAL_CLIENT_SECRET
-  );
+
+  console.log(process.env.PAYPAL_CLIENT_ID , " : " , process.env.PAYPAL_CLIENT_SECRET)
   const auth = Buffer.from(
     `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
   ).toString("base64");
+
 
   const res = await axios.post(
     `${process.env.PAYPAL_API_BASE}/v1/oauth2/token`,
@@ -128,3 +122,5 @@ const getPayPalAccessToken = async () => {
 
   return res.data.access_token;
 };
+
+
