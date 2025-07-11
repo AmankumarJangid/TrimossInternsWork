@@ -23,7 +23,7 @@ const router = express.Router();
 // Public routes
 router.get('/', validateGetProducts, getProducts);
 router.get('/featured', getFeaturedProducts);
-router.get('/category/:category/:subcategory?', getProductsByCategory);
+router.get('/category/:category/:subcategory', getProductsByCategory);
 router.get('/:id', getProduct);
 
 // Protected routes (require authentication + admin role)
