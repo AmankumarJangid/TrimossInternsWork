@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-// import { PAYPAL_CLIENT_ID, API_BASE } from "../../config";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation} from "react-router-dom";
+
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 export const api = axios.create({
@@ -15,17 +15,18 @@ export const api = axios.create({
 });
 
 
-export default function AddressForm({ productPrice }) {
+export default function AddressForm(/*{ productPrice }*/) {
   const {
     register,
     handleSubmit,
     // eslint-disable-next-line no-unused-vars
     formState: { errors },
   } = useForm();
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const {state} = useLocation();
   const [shippingCost, setShippingCost] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(productPrice);
+  const [totalAmount, setTotalAmount] = useState(state?.price);
   // eslint-disable-next-line no-unused-vars
   const [orderDetails, setOrderDetails] = useState(null);
   const [showPayPalButton, setShowPayPalButton] = useState(false);
@@ -34,11 +35,11 @@ export default function AddressForm({ productPrice }) {
     try {
       const payload = {
         origin: {
-          streetLines: [data.shipper.address.street || "Ratanada Road"],
-          city: data.shipper.address.city || "Jodhpur",
-          state: data.shipper.address.state || "RJ",
-          postalCode: data.shipper.address.postalCode || "342011",
-          countryCode: data.shipper.address.countryCode || "IN",
+          streetLines: [/*data.shipper.address.street ||*/ "Ratanada Road"],
+          city: /*data.shipper.address.city ||*/ "Jodhpur",
+          state: /*data.shipper.address.state ||*/ "RJ",
+          postalCode: /*data.shipper.address.postalCode ||*/ "342011",
+          countryCode: /*data.shipper.address.countryCode ||*/ "IN",
           residential: false,
         },
         destination: {
@@ -76,7 +77,7 @@ export default function AddressForm({ productPrice }) {
 
       const shippingCostValue = parseFloat(totalNetCharge || 0);
       setShippingCost(shippingCostValue);
-      setTotalAmount(productPrice + shippingCostValue);
+      setTotalAmount(state?.price + shippingCostValue);
       setOrderDetails(data);
       setShowPayPalButton(true);
 
@@ -99,8 +100,8 @@ export default function AddressForm({ productPrice }) {
         userId: "dummy-user-id-or-actual-user-id",
         items: [
           {
-            product: "product-id-or-name",
-            price: productPrice,
+            product: "handmade-small-bag",
+            price: state?.price,
             quantity: 1,
           },
         ],
@@ -163,7 +164,7 @@ export default function AddressForm({ productPrice }) {
   return (
     <div className="max-w-3xl mx-auto mt-10 mb-10 p-6 shadow-black bg-white rounded-lg shadow-lg ">
       <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
-        <h2 className="text-xl font-bold">Shipper Info</h2>
+        {/* <h2 className="text-xl font-bold">Shipper Info</h2>
         <input
           {...register("shipper.name")}
           placeholder="Name"
@@ -203,7 +204,7 @@ export default function AddressForm({ productPrice }) {
           {...register("shipper.address.countryCode")}
           placeholder="Country Code"
           className="border p-2 w-full"
-        />
+        /> */}
 
         <h2 className="text-xl font-bold">Recipient Info</h2>
         <input
@@ -275,7 +276,7 @@ export default function AddressForm({ productPrice }) {
           showPayPalButton && (
             <div className="mt-4">
               <div className="mb-4">
-                <p>Product Price: ${productPrice.toFixed(2)}</p>
+                <p>Product Price: ${state?.price.toFixed(2)}</p>
                 <p>Shipping Cost: ${shippingCost.toFixed(2)}</p>
                 <p className="font-bold">
                   Total Amount: ${totalAmount.toFixed(2)}

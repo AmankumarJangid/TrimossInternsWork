@@ -33,7 +33,7 @@ function App() {
             intent: "capture"
           }}>
             {/* Your other components */}
-            <AddressForm productPrice={200} /> {/* Pass your actual product price */}
+            <AddressForm /> {/* Pass your actual product price /*productPrice={1}*/ }
           </PayPalScriptProvider>
         } />
         <Route path="/order-confirmed" element={<OrderConfirmed />} />

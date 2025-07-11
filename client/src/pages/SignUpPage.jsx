@@ -3,6 +3,7 @@ import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -49,7 +50,7 @@ export default function SignupPage() {
     const newErrors = validateForm();
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await axios.post("http://localhost:3000/api/users/register", {
+        const response = await axios.post(`${API_BASE}/users/register`, {
           name: formData.username, // its name not username in the backend
           email: formData.email,
           password: formData.password

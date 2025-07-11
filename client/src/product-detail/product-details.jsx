@@ -8,7 +8,7 @@ export default function HandMirrorPage() {
   const types = ["Type 1", "Type 2", "Type 3", "TYPE 4"];
   const navigate = useNavigate();
   // eslint-disable-next-line no-unused-vars
-  const [price , setPrice] = useState("200");
+  const [price , setPrice] = useState(1); // change this to set the price of product 
 
 
 
@@ -92,7 +92,11 @@ export default function HandMirrorPage() {
           </button>
 
           <button
-          onClick={() => navigate('/address')}
+          onClick={() => navigate('/address' , { // sent directly from the current product price
+            state :{
+              price,
+            },
+          }) }
            className = "w-full bg-[#B8956A] text-[#350000] py-2 my-2 rounded hover:bg-[#bb8c57]">
             BUY NOW
           </button>
