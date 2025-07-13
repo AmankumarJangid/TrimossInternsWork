@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+
+import image8 from "../assets/images/image-8.jpg"
 export default function HandMirrorPage() {
   const [selectedType, setSelectedType] = useState("Type 1");
 
@@ -67,7 +69,7 @@ export default function HandMirrorPage() {
         </div>
         <div className="flex justify-center items-center">
           <img
-            src="./src/assets/images/image-8.jpg"
+            src={image8}
             alt="Hand Mirror"
             className="w-64 md:w-80 h-auto object-cover rounded shadow"
           />

@@ -64,7 +64,7 @@ export default function AddressForm(/*{ productPrice }*/) {
             },
           },
         ],
-        serviceType: "INTERNATIONAL_PRIORITY", // Optional
+        serviceType: "INTERNA", // Optional
       };
 
       const res = await api.post(`/fedex/rates`, payload);
