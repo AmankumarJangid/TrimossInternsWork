@@ -1,9 +1,7 @@
 // paypal_api/controllers/paypalController.js
 import Order from "../models/Order.js";
 import axios from "axios";
-
 const base = "https://api-m.sandbox.paypal.com";
-
 export const capturePayPalPayment = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -28,7 +26,7 @@ export const capturePayPalPayment = async (req, res) => {
       payerId,
       emailAddress,
       name: `${givenName} ${surname}`,
-      paidAt: paidAt || update_time || new Date(),
+      paidAt: paidAt || updateTime || new Date(),
     };
 
     if (status === "COMPLETED") {

@@ -62,7 +62,6 @@ export default function AddressForm({ productPrice }) {
         ],
         serviceType: "INTERNATIONAL_PRIORITY", // Optional
       };
-
       const res = await api.post(`/fedex/rates`, payload);
       console.log(res.data);
 
@@ -84,7 +83,6 @@ export default function AddressForm({ productPrice }) {
       alert("Failed!");
     }
   };
-
   /// 🚩 here it handles the creation of orderes for the
   const createOrder = async () => {
     try {
@@ -112,7 +110,6 @@ export default function AddressForm({ productPrice }) {
       throw error;
     }
   };
-
   /// 🚜👍 Here it handles the when the payment is approved from the
   // eslint-disable-next-line no-unused-vars
   const onApprove = async (data, actions) => {

@@ -1,4 +1,48 @@
 {
+<<<<<<< HEAD
+  "name": "trimoss.ecommerce.website",
+  "version": "1.0.0",
+  "description": "\"My end server + client work\"",
+  "keywords": [
+    "\"ecommerce",
+    "trimoss",
+    "glass",
+    "glass",
+    "mosaic\""
+  ],
+  "homepage": "https://github.com/AmankumarJangid/TrimossInternsWork#readme",
+  "bugs": {
+    "url": "https://github.com/AmankumarJangid/TrimossInternsWork/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmankumarJangid/TrimossInternsWork.git"
+  },
+  "license": "ISC",
+  "author": "\"aman\"",
+  "type": "module",
+  "main": "\"./server/src/server.js\"",
+  "scripts": {
+    "dev": "concurrently 'nodemon server/src/server.js' 'nodemon server/fedex_api/server.js"
+  },
+  "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
+    "concurrently": "^9.2.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.1",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
+    "nodemon": "^3.1.10",
+    "react-hook-form": "^7.59.0"
+=======
   "name": "trimoss",
   "private": true,
   "version": "0.0.0",
@@ -14,6 +58,7 @@
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@hookform/resolvers": "^5.1.1",
     "@paypal/react-paypal-js": "^8.8.3",
+    "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.10.0",
     "dotenv": "^17.0.1",
@@ -23,6 +68,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.59.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.3",
     "swiper": "^11.2.8",
     "yup": "^1.6.1"
@@ -40,5 +86,6 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.10",
     "vite": "^6.3.5"
+>>>>>>> 8496e44 (My changes)
   }
 }

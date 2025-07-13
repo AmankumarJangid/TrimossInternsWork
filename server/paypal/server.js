@@ -9,7 +9,6 @@ app.use(cors())
 app.use(express.json())
 
 const base = 'https://api-m.sandbox.paypal.com'
-
 // console.log(process.env.PAYPAL_CLIENT_ID , process.env.PAYPAL_CLIENT_SECRET);
 // Get PayPal Access Token
 async function getAccessToken() {

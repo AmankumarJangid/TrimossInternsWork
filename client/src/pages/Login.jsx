@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../redux/slices/authSlice";
+
 // import { API_URL } from "../../config";
 
-const API_URL = "http://localhost:3000"
+const API_URL = "http://localhost:3000";
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -58,13 +63,18 @@ export default function LoginPage() {
       console.log("✅ Login successful:", response.data);
       alert("Login successful!");
       // You can store token in localStorage if needed
-      
-        localStorage.setItem("userToken", response.data.data.accessToken);
-      
+
+      const { accessToken, user } = response.data.data;
+      dispatch(setCredentials({ token: accessToken, user }));
+      localStorage.setItem("userToken", accessToken);
+      localStorage.setItem("userDetails", user);
+
       navigate("/"); // or your authenticated route
     } catch (error) {
       console.error("❌ Login error:", error.response?.data || error.message);
-      alert("Login failed: " + (error.response?.data?.message || "Unknown error"));
+      alert(
+        "Login failed: " + (error.response?.data?.message || "Unknown error")
+      );
     }
   };
 
