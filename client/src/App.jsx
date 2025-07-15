@@ -26,16 +26,7 @@ function App() {
         <Route path="/cards" element={<ProductCards />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/product-detail" element={<ProductDetail />} />
-        <Route path="/address" element={
-          <PayPalScriptProvider options={{
-            "client-id": import.meta.env.VITE_APP_PAYPAL_CLIENT_ID ,
-            currency: "USD",
-            intent: "capture"
-          }}>
-            {/* Your other components */}
-            <AddressForm /> {/* Pass your actual product price /*productPrice={1}*/ }
-          </PayPalScriptProvider>
-        } />
+        <Route path="/address" element={<AddressForm />} /> {/* Pass your actual product price /*productPrice={1}*/ }
         <Route path="/order-confirmed" element={<OrderConfirmed />} />
       </Routes>
       <Footer />

@@ -10,8 +10,9 @@ const orderSchema = new mongoose.Schema({
   products: [
     {
       product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: "Product",
+        type : String,
         required: true,
       },
       quantity: { type: Number, required: true },
@@ -19,10 +20,10 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   payment: {
-    method: { type: String, enum: ["PayPal"], required: true },
+    method: { type: String, enum: ["PayPal", "Razorpay"], required: true },
     status: { type: String },
-    captureId: String,
-    payerId: String,
+    captureId: String,  // Will store razorpayOrderId or paypalCaptureId
+    payerId: String,    // Will store razorpayPaymentId or paypalPayerId
     emailAddress: String,
     paidAt: Date,
   },
@@ -56,6 +57,11 @@ const orderSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  totalAmount: {
+    type: Number,
+    required: true,
+    min: 0,
   },
 });
 

@@ -2,12 +2,45 @@
 
 const API_BASE = 'http://localhost:3000/api/fedex'
 
+// origin: {
+//     streetLines : ["Ratanada,Residency Circle"],
+//     city: "Jodhpur",
+//     state: "IN",
+//     postalCode: "342011",
+//     countryCode: "IN",
+//     residential: true
+//   },
+//   destination: {
+//     streetLines: ["Lanka Colony, Baran , Kedahedi House"],
+//     city: "Baran",
+//     state: "IN",
+//     postalCode: "325205",
+//     countryCode: "CA",
+//     residential: true
+//   },
+
+// origin: {
+//     streetLines : ["123 Main St"],
+//     city: "Memphis",
+//     state: "TN",
+//     postalCode: "38017",
+//     countryCode: "US",
+//     residential: false
+//   },
+//   destination: {
+//     streetLines: ["456 Queen St"],
+//     city: "Toronto",
+//     state: "ON",
+//     postalCode: "M5H 2N2",
+//     countryCode: "CA",
+//     residential: false
+//   },
 // Example 1: Get shipping rates
 async function getShippingRates () {
     alert("button clicked");
   try {
     const response = await axios.post(`${API_BASE}/rates`,{
-  origin: {
+ origin: {
     streetLines : ["123 Main St"],
     city: "Memphis",
     state: "TN",
@@ -23,21 +56,21 @@ async function getShippingRates () {
     countryCode: "CA",
     residential: false
   },
-  packages: [
-    {
-      weight: {
-         units : "KG",
-         value : 5
-      },
-      dimensions: {
-        length: 12,
-        width: 8,
-        height: 6,
-        units : "IN"
-      }
+packages: [
+  {
+    weight: {
+       units : "KG",
+       value : 5
+    },
+    dimensions: {
+      length: 12,
+      width: 8,
+      height: 6,
+      units : "IN"
     }
-  ],
-  serviceType: "INTERNATIONAL_PRIORITY"  // Optional
+  }
+],
+serviceType: "INTERNATIONAL_PRIORITY"  // Optional
 })
     showOutput('Shipping Rates:\n' + JSON.stringify(response.data, null, 2));
     console.log('Shipping Rates:', response.data)

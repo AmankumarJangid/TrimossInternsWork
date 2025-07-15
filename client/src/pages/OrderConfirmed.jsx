@@ -23,11 +23,14 @@ export default function OrderConfirmed() {
     doc.text(`Phone: ${recipient?.phone}`, 14, 65);
 
     doc.text(
-      `Product Price: $${(totalAmount - shippingCost).toFixed(2)}`,
+      `Product Price: ${(totalAmount - shippingCost).toFixed(2)} ${currency}`,
       14,
       80
     );
-    doc.text(`Shipping Cost: $${shippingCost.toFixed(2)}`, 14, 90);
+    doc.text(
+      `Payment Method : ${paymentMethod}`, 14 , 120
+    );
+    doc.text(`Shipping Cost: $${shippingCost.toFixed(2)} ${currency}`, 14, 90);
     doc.setFont("helvetica", "bold");
     doc.text(`Total Paid: $${totalAmount.toFixed(2)}`, 14, 105);
 
@@ -38,6 +41,8 @@ export default function OrderConfirmed() {
   const orderDetails = state?.orderDetails;
   const shippingCost = state?.shippingCost || 0;
   const totalAmount = state?.totalAmount || 0;
+  const paymentMethod = state?.paymentMethod || "";
+  const currency = state?.currency;
 
   const recipient = orderDetails?.recipient;
   const shipper = orderDetails?.shipper;
@@ -89,7 +94,7 @@ export default function OrderConfirmed() {
                 Payment Method
               </dt>
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">
-                PayPal
+                {paymentMethod}
               </dd>
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
@@ -105,7 +110,7 @@ export default function OrderConfirmed() {
                 Shipping Address
               </dt>
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">
-                {recipient?.address?.street}, {recipient?.address?.city},{" "}
+               {recipient?.address?.street}, {recipient?.address?.city},{" "}
                 {recipient?.address?.state}, {recipient?.address?.postalCode},{" "}
                 {recipient?.address?.countryCode}
               </dd>
@@ -123,7 +128,7 @@ export default function OrderConfirmed() {
                 Shipping Cost
               </dt>
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">
-                ${shippingCost.toFixed(2)}
+                {shippingCost.toFixed(2)} {currency}
               </dd>
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
@@ -131,7 +136,7 @@ export default function OrderConfirmed() {
                 Total Paid
               </dt>
               <dd className="font-medium text-green-700 dark:text-green-400 sm:text-end">
-                ${totalAmount.toFixed(2)}
+                {totalAmount.toFixed(2)} {currency}
               </dd>
             </dl>
           </div>

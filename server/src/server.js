@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import paypalRoutes from './routes/paypalRoutes.js';
+import razorpayRoutes from './routes/razopayRoutes.js';
 import orderRoutes from "./routes/orderRoutes.js";
 import fedexRoutes from './fedexApi/routes/fedex.js';
 import errorHandler from './fedexApi/middleware/errorHandler.js';
@@ -66,7 +67,7 @@ console.log("CORS ALLOWED ORIGIN =", process.env.CLIENT_URL);
 // }));
 
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: [process.env.CLIENT_URL, "http://127.0.0.1:3001"],
   credentials: true
 }));
 
@@ -89,6 +90,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/paypal', paypalRoutes);
+app.use('/api/razorpay', razorpayRoutes);
 app.use("/api/orders", orderRoutes);
 app.use('/api/fedex', fedexRoutes);
 

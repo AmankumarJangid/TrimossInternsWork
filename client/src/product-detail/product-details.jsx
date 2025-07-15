@@ -10,7 +10,8 @@ export default function HandMirrorPage() {
   const types = ["Type 1", "Type 2", "Type 3", "TYPE 4"];
   const navigate = useNavigate();
   // eslint-disable-next-line no-unused-vars
-  const [price , setPrice] = useState(1); // change this to set the price of product 
+  const [price , setPrice] = useState(1000);
+  const [currency, setCurrency] = useState("INR"); // change this to set the price of product 
 
 
 
@@ -80,7 +81,7 @@ export default function HandMirrorPage() {
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry.
           </p>
-          <p className="text-md mb-4 font-medium">${price}</p>
+          <p className="text-md mb-4 font-medium">{price} {currency}</p>
           <div className="relative w-full max-w-[130px] mb-4">
             <select className="appearance-none w-full border border-gray-300 px-4 py-2 pr-8 rounded text-sm">
               <option>Large</option>
@@ -97,6 +98,7 @@ export default function HandMirrorPage() {
           onClick={() => navigate('/address' , { // sent directly from the current product price
             state :{
               price,
+              currency,
             },
           }) }
            className = "w-full bg-[#B8956A] text-[#350000] py-2 my-2 rounded hover:bg-[#bb8c57]">

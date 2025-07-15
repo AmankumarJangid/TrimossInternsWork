@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import { useNavigate , useLocation} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { createRazorPayOrder, initializeRazorpayPayment } from "../utils/razorpayHandler";
 
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -24,13 +27,19 @@ export default function AddressForm(/*{ productPrice }*/) {
   } = useForm();
 
   const navigate = useNavigate();
-  const {state} = useLocation();
+  const { state } = useLocation();
   const [shippingCost, setShippingCost] = useState(0);
   const [totalAmount, setTotalAmount] = useState(state?.price);
   // eslint-disable-next-line no-unused-vars
   const [orderDetails, setOrderDetails] = useState(null);
-  const [showPayPalButton, setShowPayPalButton] = useState(false);
+  const [showPaymentButton, setShowPaymentButton] = useState(false);
   const [dbOrderId, setDbOrderId] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("Paypal");
+
+
+
+
+  // for handling the form submission
   const onSubmit = async (data) => {
     try {
       const payload = {
@@ -64,7 +73,7 @@ export default function AddressForm(/*{ productPrice }*/) {
             },
           },
         ],
-        serviceType: "INTERNA", // Optional
+        serviceType: data.recipient.address.countryCode == "IN" ? "STANDARD_OVERNIGHT" : "FEDEX_INTERNATIONAL_PRIORITY", // Optional
       };
 
       const res = await api.post(`/fedex/rates`, payload);
@@ -77,9 +86,12 @@ export default function AddressForm(/*{ productPrice }*/) {
 
       const shippingCostValue = parseFloat(totalNetCharge || 0);
       setShippingCost(shippingCostValue);
-      setTotalAmount(state?.price + shippingCostValue);
+
+      const newAmount = state?.price + shippingCostValue;
+      setTotalAmount(newAmount);
       setOrderDetails(data);
-      setShowPayPalButton(true);
+      setShowPaymentButton(true);
+      setPaymentMethod(data.paymentMethod);
 
       console.log(totalNetCharge, totalAmount);
       alert("Submitted!");
@@ -130,6 +142,7 @@ export default function AddressForm(/*{ productPrice }*/) {
 
       const captureId =
         details?.purchase_units?.[0]?.payments?.captures?.[0]?.id;
+      // eslint-disable-next-line no-unused-vars
       const updateTime = details?.update_time;
       const givenName = payer?.name?.given_name;
       const surname = payer?.name?.surname;
@@ -152,12 +165,71 @@ export default function AddressForm(/*{ productPrice }*/) {
           orderDetails,
           totalAmount,
           shippingCost,
+          paymentMethod,
+          currency : state?.currency
+
         },
       });
       console.log("Order Completed", response.data);
     } catch (error) {
       console.error("Error capturing payment:", error);
       alert("Payment failed!");
+    }
+  };
+
+  /// for handling razorpay_payment 
+  const handleRazorpayPayment = async () => {
+    try {
+      // Create order with Razorpay
+      const orderResponse = await createRazorPayOrder({
+        totalAmount: totalAmount,
+        userId: "dummy-user-id-or-actual-user-id",
+        currency: state?.currency,
+        products: [
+          {
+            product: "handmade-small-bag",
+            price: state?.price,
+            quantity: 1,
+          },
+        ],
+        shipping: {
+          name: orderDetails.recipient.name,
+          phone: orderDetails.recipient.phone,
+          email: orderDetails.recipient.email,
+          address: orderDetails.recipient.address
+        }
+      });
+
+      // Initialize Razorpay payment
+      await initializeRazorpayPayment(
+        orderResponse, // Pass the entire response object
+        // Success callback
+        (paymentResult) => {
+          alert("Payment Successful");
+          navigate("/order-confirmed", {
+            state: {
+              orderDetails,
+              totalAmount,
+              shippingCost,
+              paymentMethod,
+              paymentDetails: paymentResult.data,
+              currency : state?.currency
+            },
+          });
+        },
+        // Error callback
+        (error) => {
+          console.error("Payment failed:", error);
+          if (error.message === "Payment cancelled by user") {
+            alert("Payment was cancelled. Please try again.");
+          } else {
+            alert("Payment failed: " + error.message);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Razorpay payment failed:", error);
+      alert("Payment failed: " + error.message);
     }
   };
 
@@ -258,9 +330,9 @@ export default function AddressForm(/*{ productPrice }*/) {
         <h2 className="text-xl font-bold">Payment</h2>
         <select {...register("paymentMethod")} className="border p-2 w-full">
           <option value="">Choose payment</option>
-          <option value="Card">Card</option>
+          <option value="RazorPay">RazorPay</option>
           <option value="PayPal">PayPal</option>
-          <option value="UPI">UPI</option>
+          {/* <option value="UPI">UPI</option> */}
           <option value="CashOnDelivery">Cash on Delivery</option>
         </select>
 
@@ -273,21 +345,46 @@ export default function AddressForm(/*{ productPrice }*/) {
 
         {
           //paypal button shown after submittion
-          showPayPalButton && (
+          showPaymentButton && (
             <div className="mt-4">
               <div className="mb-4">
-                <p>Product Price: ${state?.price.toFixed(2)}</p>
-                <p>Shipping Cost: ${shippingCost.toFixed(2)}</p>
+                <p>Product Price: {state?.price.toFixed(2)} {state?.currency}</p>
+                <p>Shipping Cost: {shippingCost.toFixed(2)} {state?.currency}</p>
                 <p className="font-bold">
-                  Total Amount: ${totalAmount.toFixed(2)}
+                  Total Amount: {totalAmount.toFixed(2)} {state?.currency}
                 </p>
               </div>
+            {paymentMethod == "PayPal" && (
+              <PayPalScriptProvider options={{
+                "client-id": import.meta.env.VITE_APP_PAYPAL_CLIENT_ID,
+                currency: state?.currency || "USD",
+                intent: "capture"
+              }}>
 
-              <PayPalButtons
-                style={{ layout: "vertical" }}
-                createOrder={createOrder}
-                onApprove={onApprove}
-              />
+                <PayPalButtons
+                  style={{ layout: "vertical" }}
+                  createOrder={createOrder}
+                  onApprove={onApprove}
+                />
+                {/* Your other components */}
+                {/* <AddressForm /> Pass your actual product price /*productPrice={1} */}
+              </PayPalScriptProvider>
+            )
+          }
+
+
+          {
+            paymentMethod === "RazorPay" && (
+              <button 
+                type="button" 
+                onClick={handleRazorpayPayment}
+                className="w-full h-auto py-2 text-2xl bg-blue-800 text-white rounded"
+              > 
+                <p>Pay {totalAmount} {state?.currency}</p> 
+                <p className="text-sm">With Razorpay</p>
+              </button>
+            )
+          }
             </div>
           )
         }
