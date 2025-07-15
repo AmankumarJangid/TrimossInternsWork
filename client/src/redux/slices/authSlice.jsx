@@ -4,6 +4,11 @@ const initialState = {
   user: localStorage.getItem("userDetails") || null,
   token: localStorage.getItem("userToken") || null,
 };
+// const initialState = {
+//   user: JSON.parse(localStorage.getItem("userDetails")) || null,
+//   token: localStorage.getItem("userToken") || null,
+// };
+
 
 const authSlice = createSlice({
   name: "auth",
@@ -17,6 +22,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem("userToken");
+      localStorage.removeItem("userDetails");
     },
   },
 });

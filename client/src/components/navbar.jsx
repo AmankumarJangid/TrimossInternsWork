@@ -9,6 +9,7 @@ import { logout } from "../redux/slices/authSlice"; // adjust the path as needed
 const Navbar = () => {
   const dispatch = useDispatch();
   const { token} = useSelector((state) => state.auth);
+  console.log(token, "userToken");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const toggleMenu = () => {
@@ -52,7 +53,7 @@ const Navbar = () => {
             href="#"
             className="text-white hover:text-gray-200 transition-colors text-base font-medium"
           >
-            About Us
+            About
           </a>
           <a
             href="#"

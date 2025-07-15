@@ -67,7 +67,7 @@ export default function LoginPage() {
       const { accessToken, user } = response.data.data;
       dispatch(setCredentials({ token: accessToken, user }));
       localStorage.setItem("userToken", accessToken);
-      localStorage.setItem("userDetails", user);
+      localStorage.setItem("userDetails",  JSON.stringify(user));
 
       navigate("/"); // or your authenticated route
     } catch (error) {
