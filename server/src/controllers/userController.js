@@ -506,7 +506,7 @@ export const verifyOtp = async (req, res) => {
 export const resetPasswordWithOTP = async (req, res) =>{
   const {email , otp , newPassword} = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select('+password');
 
   if (!user || user.otp !== otp || user.otpExpiresAt < new Date()) {
     return res.status(400).json({ message: 'Invalid or expired OTP' });
