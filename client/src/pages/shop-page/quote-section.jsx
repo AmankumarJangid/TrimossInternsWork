@@ -15,11 +15,11 @@ const QuoteSection = () => {
           something fresh and <br />
           engaging.
         </p>
-         <div className="absolute bottom-10 right-10 z-20">
-        <div className="px-6 py-3 border border-white rounded-full text-lg italic">
-          Arden Lee
+        <div className="absolute bottom-10 right-10 z-20">
+          <div className="px-6 py-3 border border-white rounded-full text-lg italic">
+            Arden Lee
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

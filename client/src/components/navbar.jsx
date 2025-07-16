@@ -114,12 +114,12 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <a
-              href="#"
-              className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
-            >
-              Shop
-            </a>
+                      <Link
+            to="/shop"
+            className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
+          >
+            Shop
+          </Link>
             <Link
               to="/cards"
               className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"

@@ -20,7 +20,7 @@ const MuralsSection = () => {
             />
           </div>
         </div>
-        <div className="w-full flex gap-8 md:flex-row flex-col  mb-10">
+        <div className="w-full flex gap-8 md:flex-row flex-col mb-10">
           <p className="text-lg md:text-xl lg:text-2xl text-gray-300 leading-relaxed md:w-7/12">
             Trimoss mosaic murals are immersive expressions of color, texture,
             and tradition. Hand-assembled by skilled artisans, each mural tells

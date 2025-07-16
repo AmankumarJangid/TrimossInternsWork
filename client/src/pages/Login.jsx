@@ -2,16 +2,10 @@ import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { setCredentials } from "../redux/slices/authSlice";
 
-// import { API_URL } from "../../config";
-
-const API_URL = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function LoginPage() {
-  const dispatch = useDispatch();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -55,43 +49,28 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/api/users/login`, {
+      const response = await axios.post(`${API_BASE}/users/login`, {
         email: formData.email,
         password: formData.password,
       });
 
-      console.log("✅ Login successful:", response.data);
-      alert("Login successful!");
-      // You can store token in localStorage if needed
-
-      const { accessToken, user } = response.data.data;
-      dispatch(setCredentials({ token: accessToken, user }));
-      localStorage.setItem("userToken", accessToken);
-      localStorage.setItem("userDetails",  JSON.stringify(user));
-
-      navigate("/"); // or your authenticated route
+      localStorage.setItem("userToken", response.data.data.accessToken);
+      navigate("/");
     } catch (error) {
-      console.error("❌ Login error:", error.response?.data || error.message);
-      alert(
-        "Login failed: " + (error.response?.data?.message || "Unknown error")
-      );
+      alert("Login failed: " + (error.response?.data?.message || "Unknown error"));
     }
   };
 
   return (
-    <div className="p-4 rounded-2xl">
-      <div className="h-[80vh] ml-16 w-[90%] rounded-2xl bg-black flex flex-col lg:flex-row overflow-hidden">
-        <div className="flex-1 relative min-h-[40vh] lg:min-h-full">
-          <div>{/* image bg */}</div>
-
-          <div className="absolute bottom-6 left-6 lg:bottom-12 lg:left-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-              Welcome Back!
-            </h1>
-          </div>
+    <div className="p-2 sm:p-4">
+      <div className="min-h-screen sm:min-h-[80vh] mx-auto w-full max-w-7xl rounded-2xl bg-black flex flex-col lg:flex-row overflow-hidden">
+        <div className="flex-1 relative min-h-[30vh] sm:min-h-[35vh] lg:min-h-full flex items-end p-6 lg:p-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+            Welcome Back!
+          </h1>
         </div>
 
-        <div className="w-full lg:w-[454px] xl:w-[28rem] mr-4 mt-6 h-11/12 rounded-2xl m-2 bg-white flex items-center justify-center p-4 lg:p-20">
+        <div className="w-full lg:w-[454px] xl:w-[28rem] mt-4 sm:mt-6 mb-6 mr-6 sm:mb-8 lg:my-8 mx-auto rounded-2xl bg-white flex items-center justify-center p-4 sm:p-6 lg:p-10">
           <div className="w-full max-w-sm">
             <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 lg:mb-8">
               Log in
@@ -172,9 +151,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
-                  onClick={() =>
-                    alert("Forgot password functionality would go here")
-                  }
+                  onClick={() => alert("Forgot password functionality would go here")}
                 >
                   Forgot Password?
                 </button>

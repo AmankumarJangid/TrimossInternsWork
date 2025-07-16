@@ -3,25 +3,24 @@ import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-    email: ""
+    email: "",
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  // const [rememberMe, setRememberMe] = useState(false);
-  const navigate = useNavigate()
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -32,15 +31,9 @@ export default function SignupPage() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
-    }
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    }
+    if (!formData.username.trim()) newErrors.username = "Username is required";
+    if (!formData.password.trim()) newErrors.password = "Password is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
     return newErrors;
   };
 
@@ -49,16 +42,14 @@ export default function SignupPage() {
     const newErrors = validateForm();
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await axios.post("http://localhost:3000/api/users/register", {
-          name: formData.username, // its name not username in the backend
+        const response = await axios.post(`${API_BASE}/users/register`, {
+          name: formData.username,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
         });
-        console.log("User registered:", response.data);
         alert("Signup successful!");
-        navigate("/login"); // go to login page
+        navigate("/login");
       } catch (err) {
-        console.error(err);
         alert(err.response?.data?.message || "Signup failed!");
       }
     } else {
@@ -67,27 +58,21 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="p-4 rounded-2xl">
-      <div className=" h-[80vh] ml-16 rounded-2xl w-[90%] bg-black flex flex-col lg:flex-row overflow-hidden">
-        <div className="flex-1 relative min-h-[40vh] lg:min-h-full">
-          <div>{/* image bg */}</div>
-
-          <div className="absolute bottom-6 left-6 lg:bottom-12 lg:left-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-              Welcome!
-            </h1>
-          </div>
+    <div className="p-2 sm:p-4">
+      <div className="min-h-screen sm:min-h-[80vh] mx-auto w-full max-w-7xl rounded-2xl bg-black flex flex-col lg:flex-row overflow-hidden">
+        <div className="flex-1 relative min-h-[30vh] sm:min-h-[35vh] lg:min-h-full flex items-end p-6 lg:p-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+            Welcome!
+          </h1>
         </div>
 
-        <div className="w-full mt-6 mr-4 lg:w-[454px] xl:w-[30rem]  h-11/12 rounded-2xl m-2 bg-white flex items-center justify-center p-4 lg:p-20">
+        <div className="w-full lg:w-[454px] mr-4 xl:w-[30rem] mt-4 sm:mt-6 mb-6 sm:mb-8 mx-auto rounded-2xl bg-white flex items-center justify-center p-4 sm:p-6 lg:p-10">
           <div className="w-full max-w-sm">
-            <h2 className="text-2xl lg:text-3xl font-bold mt-8 text-gray-900 mb-6 lg:mb-8">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 lg:mb-8">
               Sign up
             </h2>
-            {/* //full name field also changed name="username " from "Full Name"  */}
 
-            <div className="space-y-4 lg:space-y-4">
-
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full Name
@@ -107,7 +92,6 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              {/* //email field  */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
@@ -139,8 +123,6 @@ export default function SignupPage() {
                 </div>
               </div>
 
-
-              {/* //password field   */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -171,7 +153,9 @@ export default function SignupPage() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.password}
+                    </p>
                   )}
                 </div>
 
@@ -202,7 +186,7 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="w-full bg-black text-white py-3 rounded-full  font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]"
+                className="w-full bg-black text-white py-3 rounded-full font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]"
               >
                 Create Account
               </button>
@@ -216,7 +200,10 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <button onClick={() => navigate("/login")} className="w-full bg-gray-200 text-gray-900 py-3 rounded-full mb-8 font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]">
+              <button
+                onClick={() => navigate("/login")}
+                className="w-full bg-gray-200 text-gray-900 py-3 rounded-full font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02]"
+              >
                 Log in
               </button>
             </div>

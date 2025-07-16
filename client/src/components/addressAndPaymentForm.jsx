@@ -123,7 +123,7 @@ export default function AddressForm({ productPrice }) {
 
       const captureId =
         details?.purchase_units?.[0]?.payments?.captures?.[0]?.id;
-      const updateTime = details?.update_time;
+      // const updateTime = details?.update_time;
       const givenName = payer?.name?.given_name;
       const surname = payer?.name?.surname;
       const response = await axios.post(
