@@ -27,8 +27,6 @@
     "start": "node server/src/server.js"
   },
   "dependencies": {
-    "concurrently": "^9.2.0",
-    "pm2": "^6.0.8",
-    "react-hook-form": "^7.59.0"
+    "concurrently": "^9.2.0"
   }
 }
