@@ -22,8 +22,9 @@ export const auth = async (req, res, next) => {
         message: 'Token is not valid or user is inactive'
       });
     }
-
+    console.log( JSON.stringify(user));
     req.user = user;
+    cons
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);

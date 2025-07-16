@@ -1,6 +1,9 @@
 import express from 'express';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import otpGenerator from 'otp-generator';
+import bcrypt from 'bcrypt'
 
 // Register new user
 export const registerUser = async (req, res) => {
@@ -426,3 +429,97 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+
+// added OTP generator and sender 
+/////////////////////////////////
+/////////////////////////////////
+
+
+
+export const sendForgotPasswordOTP = async(req, res) =>{
+  const {email} = req.body;
+  const user = await User.findOne({email});
+
+  if( !user ) return res.status(404).json({message : "Enter a valid email, User not found "});
+
+  const otp =  otpGenerator.generate( 6 , { upperCaseAlphabets : false , specialChars : false});
+  const expiry = new Date(Date.now() + 10*60*1000);
+  user.otp = otp;
+  user.otpExpiresAt = expiry;
+
+  await user.save();
+
+  console.log( user.otp );
+
+  // create the transporter
+  const transporter = nodemailer.createTransport({
+  service : "gmail",
+  auth : {
+    user : process.env.MY_EMAIL,
+    pass: process.env.MY_EMAIL_PASSWORD
+  }
+  })
+
+  ///// send to gmail to the entered email
+
+  await transporter.sendMail({
+    from : process.env.MY_EMAIL,
+    to : email,
+    subject : `Your OTP for password change is ${otp}`,
+    text : `From Trimoss India , \n
+            The otp for password Change is \n
+            ${otp}\n
+            This otp will valid for the next 10 minutes`
+  });
+
+  res.json({message : "OTP is sent successfully"});
+
+}
+
+
+// ✅ Verifies OTP only, doesn't reset password
+export const verifyOtp = async (req, res) => {
+
+  const { email, otp } = req.body;
+  console.log( otp);
+  const user = await User.findOne({ email }).select('+otp +otpExpiresAt');
+
+  if (!user) return res.status(404).json({ message: 'User not found' });
+
+  if( (otp === user.otp) && (user.otpExpiresAt > Date.now())){
+    return res.status(200).json({ success: true });
+  }
+  
+  // if (!user.otp || user.otp != otp || user.otpExpiresAt > Date.now()) 
+  else {
+    return res.status(400).json({ message: 'Invalid or expired OTP' });
+  }
+
+  
+};
+
+
+
+
+// ✅ Reset password after otop validation
+export const resetPasswordWithOTP = async (req, res) =>{
+  const {email , otp , newPassword} = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user || user.otp !== otp || user.otpExpiresAt < new Date()) {
+    return res.status(400).json({ message: 'Invalid or expired OTP' });
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 12 );
+
+  user.password = hashedPassword;
+  user.otp = null;
+  user.otpExpiresAt = null;
+  await user.save();
+
+  res.json({message : "Password is successfully changed"});
+
+
+}
