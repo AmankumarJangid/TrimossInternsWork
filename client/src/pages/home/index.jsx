@@ -6,12 +6,12 @@ import MuralsSection from "./murals";
 
 const Home = () => {
   return (
-    <div>
+    <main className="w-full overflow-x-hidden">
       <HeroSection />
       <FeaturedCollections />
       <TablesFurnitureSection />
       <MuralsSection />
-    </div>
+    </main>
   );
 };
 

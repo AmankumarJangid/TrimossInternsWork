@@ -1,15 +1,16 @@
-// import React from 'react';
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useNavigate, useLocation } from "react-router-dom";
-
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { createRazorPayOrder, initializeRazorpayPayment } from "../utils/razorpayHandler";
+import { useSelector } from "react-redux"; // If you want to use userId from Redux
 
+// added country selector 
+import CountryStateSelector from "./countryStateSelector";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
+
 export const api = axios.create({
   baseURL: API_BASE || "/api",
   headers: {
@@ -17,69 +18,93 @@ export const api = axios.create({
   },
 });
 
-
-export default function AddressForm(/*{ productPrice }*/) {
+export default function AddressForm() {
   const {
     register,
     handleSubmit,
-    // eslint-disable-next-line no-unused-vars
+    setValue, // for country, state, dialCode
+    watch, // for dial-up code
     formState: { errors },
-  } = useForm();
+
+  } = useForm({ //dial up code 
+    defaultValues: {
+      recipient: {
+        address: {
+          countryCode: "",
+          state: "",
+          dialCode: "", // Add this
+          phone: "",
+        },
+      },
+    },
+  });
+
 
   const navigate = useNavigate();
+
+  //   const role = "user";
+  const { user, token } = useSelector((state) => state.auth); // added user and token access 
   const { state } = useLocation();
   const [shippingCost, setShippingCost] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(state?.price);
-  // eslint-disable-next-line no-unused-vars
+  const [totalAmount, setTotalAmount] = useState(state?.price || 0);
   const [orderDetails, setOrderDetails] = useState(null);
   const [showPaymentButton, setShowPaymentButton] = useState(false);
   const [dbOrderId, setDbOrderId] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("Paypal");
+  const [paymentMethod, setPaymentMethod] = useState("PayPal");
 
+  //country code selector 
+  const [recipientLocation, setRecipientLocation] = useState({
+    country: null,
+    state: null,
+  });
 
+  // const user = useSelector(state => state.auth.user); // Optionally get user ID
 
-
-  // for handling the form submission
   const onSubmit = async (data) => {
+    alert("submit button pressed");
     try {
+      const address = data?.recipient?.address;
+      if (!address) {
+        console.error("Recipient address is missing");
+        return;
+      }
+
+      // Proceed safely using `address`
+      console.log("Country:", address.countryCode);
+      console.log("State:", address.state);
+      console.log("Phone:", address.phone);
+      console.log("StateCode " , address.stateCode);
+
       const payload = {
         origin: {
           streetLines: [/*data.shipper.address.street ||*/ "Ratanada Road"],
-          city: /*data.shipper.address.city ||*/ "Jodhpur",
-          state: /*data.shipper.address.state ||*/ "RJ",
-          postalCode: /*data.shipper.address.postalCode ||*/ "342011",
+          city: /*data.shipper.address.city || */"Jodhpur",
+          state: /*data.shipper.address.stateCode || */"RJ",
+          postalCode: /*data.shipper.address.postalCode || */"342011",
           countryCode: /*data.shipper.address.countryCode ||*/ "IN",
           residential: false,
         },
         destination: {
           streetLines: [data.recipient.address.street || "456 Queen St"],
           city: data.recipient.address.city || "Toronto",
-          state: data.recipient.address.state || "ON",
-          postalCode: data.recipient.address.postalCode || "M5H 2N2",
-          countryCode: data.recipient.address.countryCode || "CA",
+          state: data.recipient.address.stateCode.toUpperCase() || "ON",
+          postalCode: data.recipient.address.postalCode.toUpperCase() || "M5H 2N2",
+          countryCode: data.recipient.address.countryCode.toUpperCase() || "CA",
           residential: data.recipient.address.residential,
         },
         packages: [
           {
-            weight: {
-              units: "KG",
-              value: 0.4,
-            },
-            dimensions: {
-              length: 4,
-              width: 3,
-              height: 2,
-              units: "IN",
-            },
+            weight: { units: "KG", value: 0.4 },
+            dimensions: { length: 4, width: 3, height: 2, units: "IN" },
           },
         ],
-        serviceType: data.recipient.address.countryCode == "IN" ? "STANDARD_OVERNIGHT" : "FEDEX_INTERNATIONAL_PRIORITY", // Optional
+        serviceType:
+          data.recipient.address.countryCode.toUpperCase() === "IN"
+            ? "STANDARD_OVERNIGHT"
+            : "FEDEX_INTERNATIONAL_PRIORITY",
       };
 
       const res = await api.post(`/fedex/rates`, payload);
-      console.log(res.data);
-
-      // how can I use this price to send over to the paypal where it also access base price of the product
       const totalNetCharge =
         res.data?.data?.output?.rateReplyDetails[0]?.ratedShipmentDetails[0]
           ?.totalNetCharge;
@@ -92,24 +117,18 @@ export default function AddressForm(/*{ productPrice }*/) {
       setOrderDetails(data);
       setShowPaymentButton(true);
       setPaymentMethod(data.paymentMethod);
-
-      console.log(totalNetCharge, totalAmount);
-      alert("Submitted!");
     } catch (err) {
       console.error(err);
-      alert("Failed!");
+      alert("Failed to calculate shipping.");
     }
   };
 
-  /// 🚩 here it handles the creation of orderes for the
   const createOrder = async () => {
     try {
-      console.log("Creating PayPal order with amount:", totalAmount);
-
       const response = await api.post(`/paypal/create-order`, {
         amount: totalAmount.toFixed(2).toString(),
-        // description : "This is amount for the product"
-        userId: "dummy-user-id-or-actual-user-id",
+        currency: state?.currency,
+        userId: "dummy-user-id", // Replace or fetch via Redux
         items: [
           {
             product: "handmade-small-bag",
@@ -118,72 +137,55 @@ export default function AddressForm(/*{ productPrice }*/) {
           },
         ],
       });
-      const paypalOrderId = response.data?.paypalOrderId;
-      const orderId = response.data?.dbOrderId;
-      setDbOrderId(orderId);
-      return paypalOrderId;
-      // return response.data?.paypalOrderId;
+
+      setDbOrderId(response.data?.dbOrderId);
+      return response.data?.paypalOrderId;
     } catch (error) {
-      console.error("Error creating Paypal order ", error);
+      console.error("PayPal order creation failed", error);
       throw error;
     }
   };
 
-  /// 🚜👍 Here it handles the when the payment is approved from the
-  // eslint-disable-next-line no-unused-vars
   const onApprove = async (data, actions) => {
     try {
-      if (!dbOrderId) {
-        alert("Order ID not found. Payment cannot be processed.");
-        return;
-      }
-      const details = await actions.order.capture(); // 🟢 Proper capture with full details
+      const details = await actions.order.capture();
       const payer = details?.payer;
-
       const captureId =
         details?.purchase_units?.[0]?.payments?.captures?.[0]?.id;
-      // eslint-disable-next-line no-unused-vars
-      const updateTime = details?.update_time;
-      const givenName = payer?.name?.given_name;
-      const surname = payer?.name?.surname;
+
       const response = await axios.post(
         `${API_BASE}/paypal/${dbOrderId}/capture`,
         {
           captureId,
           payerId: data.payerID,
           emailAddress: payer?.email_address || "unknown@example.com",
-          givenName,
-          surname,
+          givenName: payer?.name?.given_name,
+          surname: payer?.name?.surname,
           status: "COMPLETED",
           paidAt: new Date().toISOString(),
         }
       );
+
       setOrderDetails(response.data);
-      alert("Payment Successful");
       navigate("/order-confirmed", {
         state: {
           orderDetails,
           totalAmount,
           shippingCost,
           paymentMethod,
-          currency : state?.currency
-
+          currency: state?.currency,
         },
       });
-      console.log("Order Completed", response.data);
     } catch (error) {
-      console.error("Error capturing payment:", error);
-      alert("Payment failed!");
+      console.error("Error capturing PayPal payment:", error);
     }
   };
 
-  /// for handling razorpay_payment 
   const handleRazorpayPayment = async () => {
     try {
-      // Create order with Razorpay
       const orderResponse = await createRazorPayOrder({
-        totalAmount: totalAmount,
-        userId: "dummy-user-id-or-actual-user-id",
+        totalAmount,
+        userId: user._id,
         currency: state?.currency,
         products: [
           {
@@ -196,16 +198,13 @@ export default function AddressForm(/*{ productPrice }*/) {
           name: orderDetails.recipient.name,
           phone: orderDetails.recipient.phone,
           email: orderDetails.recipient.email,
-          address: orderDetails.recipient.address
-        }
+          address: orderDetails.recipient.address,
+        },
       });
 
-      // Initialize Razorpay payment
       await initializeRazorpayPayment(
-        orderResponse, // Pass the entire response object
-        // Success callback
+        orderResponse,
         (paymentResult) => {
-          alert("Payment Successful");
           navigate("/order-confirmed", {
             state: {
               orderDetails,
@@ -213,181 +212,154 @@ export default function AddressForm(/*{ productPrice }*/) {
               shippingCost,
               paymentMethod,
               paymentDetails: paymentResult.data,
-              currency : state?.currency
+              currency: state?.currency,
             },
           });
         },
-        // Error callback
         (error) => {
-          console.error("Payment failed:", error);
-          if (error.message === "Payment cancelled by user") {
-            alert("Payment was cancelled. Please try again.");
-          } else {
-            alert("Payment failed: " + error.message);
-          }
+          console.error("Razorpay failed:", error);
+          alert(error.message);
         }
       );
     } catch (error) {
-      console.error("Razorpay payment failed:", error);
-      alert("Payment failed: " + error.message);
+      console.error("Razorpay setup error:", error);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 mb-10 p-6 shadow-black bg-white rounded-lg shadow-lg ">
-      <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
-        {/* <h2 className="text-xl font-bold">Shipper Info</h2>
-        <input
-          {...register("shipper.name")}
-          placeholder="Name"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.company")}
-          placeholder="Company"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.phone")}
-          placeholder="Phone"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.address.street")}
-          placeholder="Street"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.address.city")}
-          placeholder="City"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.address.state")}
-          placeholder="State"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.address.postalCode")}
-          placeholder="Postal Code"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("shipper.address.countryCode")}
-          placeholder="Country Code"
-          className="border p-2 w-full"
-        /> */}
+    <div className="max-w-3xl mx-auto mt-10 mb-10 p-6 shadow-black bg-white rounded-lg shadow-lg">
 
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+        {user.role === "admin" && (
+          <>
+            <h2 className="text-xl font-bold">Shipper Info</h2>
+            <input{...register("shipper.name")} placeholder="Name" className="border p-2 w-full"
+            />
+            <input {...register("shipper.company")} placeholder="Company" className="border p-2 w-full"
+            />
+            <input  {...register("shipper.phone")} placeholder="Phone" className="border p-2 w-full"
+            />
+            <input  {...register("shipper.address.street")} placeholder="Street" className="border p-2 w-full"
+            />
+            <input {...register("shipper.address.city")} placeholder="City" className="border p-2 w-full"
+            />
+            <input {...register("shipper.address.state")} placeholder="State" className="border p-2 w-full"
+            />
+            <input {...register("shipper.address.postalCode")} placeholder="Postal Code" className="border p-2 w-full"
+            />
+            <input {...register("shipper.address.countryCode")} placeholder="Country Codem" className="border p-2 w-full" />
+          </>)}
+
+        {/*💁‍♂️Recipients info*/}
         <h2 className="text-xl font-bold">Recipient Info</h2>
-        <input
-          {...register("recipient.name")}
-          placeholder="Name"
-          className="border p-2 w-full"
+        <input {...register("recipient.name", { required: true })} placeholder="Name" className="border p-2 w-full" />
+
+        <input {...register("recipient.company")} placeholder="Company" className="border p-2 w-full" />
+
+        {/* <input {...register("recipient.phone", { required: true })} placeholder="Phone" className="border p-2 w-full" /> */}
+
+        <CountryStateSelector
+          onChange={({ country, state }) => {
+            setValue("recipient.address.countryCode", country?.value || "");
+            setValue("recipient.address.state", state?.name || "");
+            setValue("recipient.address.stateCode" ,state?.value || "")
+            setValue("recipient.address.dialCode", country?.dialCode || ""); // Set dial code
+          }}
         />
+
+
+
         <input
-          {...register("recipient.company")}
-          placeholder="Company"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("recipient.phone")}
-          placeholder="Phone"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("recipient.address.street")}
-          placeholder="Street"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("recipient.address.city")}
-          placeholder="City"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("recipient.address.state")}
-          placeholder="State"
-          className="border p-2 w-full"
-        />
-        <input
-          {...register("recipient.address.postalCode")}
-          placeholder="Postal Code"
-          className="border p-2 w-full"
-        />
-        <input
+          type="hidden"
           {...register("recipient.address.countryCode")}
-          placeholder="Country Code"
-          className="border p-2 w-full"
         />
+        <input
+          type="hidden"
+          {...register("recipient.address.state")}
+        />
+        <input
+          type="hidden"
+          {...register("recipient.address.stateCode")}
+        />
+
+        <div className="mt-4">  {/* mobile number selector */}
+          <label className="block mb-1">Phone Number</label>
+          <div className="flex items-center gap-2">
+            <span className="border px-3 py-2 bg-gray-100 rounded text-sm">
+              +{watch("recipient.address.dialCode") || "__"}
+            </span>
+            <input
+              type="tel"
+              {...register("recipient.address.phone", { required: "Phone is required" })}
+              className="border p-2 flex-1 rounded w-full"
+              placeholder="Enter phone number"
+            />
+          </div>
+          {errors?.recipient?.address?.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.recipient.address.phone.message}</p>
+          )}
+        </div>
+
+        {/* <input {...register("recipient.address.countryCode", { required: true })} placeholder="Country Code" className="border p-2 w-full" /> */}
+
+        {/* <input {...register("recipient.address.state", { required: true })} placeholder="State" className="border p-2 w-full" /> */}
+
+        <input {...register("recipient.address.city", { required: true })} placeholder="City" className="border p-2 w-full" />
+
+        <input {...register("recipient.address.street", { required: true })} placeholder="Street" className="border p-2 w-full" />
+
+        <input {...register("recipient.address.postalCode", { required: true })} placeholder="Postal Code" className="border p-2 w-full" />
+
+
         <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            {...register("recipient.address.residential")}
-          />
+          <input type="checkbox" {...register("recipient.address.residential")} />
           Residential
         </label>
 
         <h2 className="text-xl font-bold">Payment</h2>
-        <select {...register("paymentMethod")} className="border p-2 w-full">
+        <select {...register("paymentMethod", { required: true })} className="border p-2 w-full">
           <option value="">Choose payment</option>
-          <option value="RazorPay">RazorPay</option>
-          <option value="PayPal">PayPal</option>
-          {/* <option value="UPI">UPI</option> */}
+
+          {state?.currency === "INR" && <option value="RazorPay">RazorPay</option>}
+          {state?.currency !== "INR" && <option value="PayPal">PayPal</option>}
+
           <option value="CashOnDelivery">Cash on Delivery</option>
         </select>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
           Submit
         </button>
 
-        {
-          //paypal button shown after submittion
-          showPaymentButton && (
-            <div className="mt-4">
-              <div className="mb-4">
-                <p>Product Price: {state?.price.toFixed(2)} {state?.currency}</p>
-                <p>Shipping Cost: {shippingCost.toFixed(2)} {state?.currency}</p>
-                <p className="font-bold">
-                  Total Amount: {totalAmount.toFixed(2)} {state?.currency}
-                </p>
-              </div>
-            {paymentMethod == "PayPal" && (
-              <PayPalScriptProvider options={{
-                "client-id": import.meta.env.VITE_APP_PAYPAL_CLIENT_ID,
-                currency: state?.currency || "USD",
-                intent: "capture"
-              }}>
+        {showPaymentButton && (
+          <div className="mt-4">
+            <p>Product Price: {state?.price?.toFixed(2)} {state?.currency}</p>
+            <p>Shipping Cost: {shippingCost?.toFixed(2)} {state?.currency}</p>
+            <p className="font-bold">Total Amount: {totalAmount?.toFixed(2)} {state?.currency}</p>
 
-                <PayPalButtons
-                  style={{ layout: "vertical" }}
-                  createOrder={createOrder}
-                  onApprove={onApprove}
-                />
-                {/* Your other components */}
-                {/* <AddressForm /> Pass your actual product price /*productPrice={1} */}
+            {paymentMethod === "PayPal" && (
+              <PayPalScriptProvider
+                options={{
+                  "client-id": import.meta.env.VITE_APP_PAYPAL_CLIENT_ID,
+                  currency: state?.currency || "USD",
+                  intent: "capture",
+                }}
+              >
+                <PayPalButtons createOrder={createOrder} onApprove={onApprove} />
               </PayPalScriptProvider>
-            )
-          }
+            )}
 
-
-          {
-            paymentMethod === "RazorPay" && (
-              <button 
-                type="button" 
+            {paymentMethod === "RazorPay" && (
+              <button
+                type="button"
                 onClick={handleRazorpayPayment}
-                className="w-full h-auto py-2 text-2xl bg-blue-800 text-white rounded"
-              > 
-                <p>Pay {totalAmount} {state?.currency}</p> 
-                <p className="text-sm">With Razorpay</p>
+                className="w-full py-2 bg-blue-800 text-white text-lg rounded mt-2"
+              >
+                Pay {totalAmount?.toFixed(2)} {state?.currency} with Razorpay
               </button>
-            )
-          }
-            </div>
-          )
-        }
+            )}
+          </div>
+        )}
       </form>
     </div>
   );

@@ -2,17 +2,10 @@ import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch , useSelector } from "react-redux";
-import { setCredentials } from "../redux/slices/authSlice";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function LoginPage() {
-
-  const {user, token} =  useSelector((state) => state.auth);
-
-  const dispatch = useDispatch();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -63,17 +56,11 @@ export default function LoginPage() {
       if( !response.data ) alert( "Login Successfully");
       console.log("✅ Login successful:", response.data);
 
-      const userData = response.data;
-
-      /// updates in user credentials storage
-      console.log("user Data " , userData);
-      dispatch(setCredentials({ user: userData, token: response.data.data.accessToken }));
-
-      localStorage.setItem("userToken", response.data.data.accessToken);
-      localStorage.setItem("userDetail" , response.data.data.user);
+      // localStorage.setItem("userToken", response.data.data.accessToken);
 
       navigate("/");
     } catch (error) {
+      response.data
       alert("Login failed: " + (error.response?.data?.message || "Unknown error"));
     }
   };

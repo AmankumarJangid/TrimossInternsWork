@@ -75,11 +75,14 @@ export const loginUser = async (req, res) => {
     }
 
     // Find user and include password
+    const normalizedEmail = email.trim().toLowerCase();
     const user = await User.findByEmail(email).select('+password');
+    
+    console.log( "found user" , user);
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: `Invalid credentials at selecting user`
       });
     }
 
@@ -88,7 +91,7 @@ export const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid credentials at comparePassword'
       });
     }
 

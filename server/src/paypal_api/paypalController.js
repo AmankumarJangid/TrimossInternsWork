@@ -46,6 +46,8 @@ export const createPayPalOrder = async (req, res) => {
   try {
     // validate amount
     const amountValue = parseFloat(req.body.amount);
+    console.log( req.body.currency);
+    const currencyCode = req.body.currency;
     if (isNaN(amountValue)) {
       return res.status(400).json({
         success: false,
@@ -68,7 +70,7 @@ export const createPayPalOrder = async (req, res) => {
         purchase_units: [
           {
             amount: {
-              currency_code: "USD",
+              currency_code: currencyCode,
               value: amountValue.toFixed(2),
             },
           },

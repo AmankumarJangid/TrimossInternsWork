@@ -110,7 +110,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Documentation Links */}
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-6">
                 Documentation
@@ -151,7 +150,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Social Links */}
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-6">
                 Social
@@ -159,7 +157,7 @@ const Footer = () => {
               <ul className="space-y-4">
                 <li>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/share/1FDMduJAdQ/"
                     className="text-gray-700 hover:text-gray-900 transition-colors"
                   >
                     Facebook
@@ -167,7 +165,8 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://www.instagram.com/trimoss.in
+"
                     className="text-gray-700 hover:text-gray-900 transition-colors"
                   >
                     Instagram
@@ -175,7 +174,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://youtube.com/@trimoss"
                     className="text-gray-700 hover:text-gray-900 transition-colors"
                   >
                     Youtube
@@ -183,17 +182,16 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://www.linkedin.com/company/trimoss/"
                     className="text-gray-700 hover:text-gray-900 transition-colors"
                   >
-                    Twitter
+                    LinkedIn
                   </a>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom Section */}
           <div className="border-t border-gray-200 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-600 text-base">
