@@ -1,9 +1,4 @@
-// import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//   user: localStorage.getItem("userDetails") || null,
-//   token: localStorage.getItem("userToken") || null,
-// };
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {

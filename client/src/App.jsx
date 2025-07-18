@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import Home from "./pages/home/index";
@@ -10,10 +11,14 @@ import SignupPage from "./pages/SignUpPage";
 import AddressForm from "./components/addressAndPaymentForm";
 import OrderConfirmed from "./pages/OrderConfirmed";
 // import { PAYPAL_CLIENT_ID } from "../config";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+// import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import useAuthCheck from "./utils/useAuthCheck";
+
 
 
 function App() {
+
+  useAuthCheck();
   
 
   return (

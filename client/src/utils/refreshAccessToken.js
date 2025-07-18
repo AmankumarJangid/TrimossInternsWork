@@ -1,8 +1,5 @@
-import axios from "axios";
-import {jwtDecode }from "jwt-decode";
-import { setCredentials, logout } from '../redux/slices/authSlice';
-
-
+import axios from 'axios';
+import { setCredentials, logout } from '../redux/authSlice';
 
 export const refreshAccessToken = async (dispatch) => {
   try {
@@ -16,9 +13,7 @@ export const refreshAccessToken = async (dispatch) => {
     const user = JSON.parse(localStorage.getItem("userDetails"));
 
     dispatch(setCredentials({ user, token: accessToken }));
-
     return accessToken;
-
   } catch (error) {
     dispatch(logout());
     console.error('Token refresh failed:', error.response?.data || error.message);
@@ -28,14 +23,11 @@ export const refreshAccessToken = async (dispatch) => {
 
 
 export function isTokenExpired(token){
-    try{
-        const decoded = jwtDecode(token);
-        const now = Math.floor(Date.now() / 1000) ; // because Date.now() provided current time in milliseconds but jwt in seconds 
-        return decoded.exp < now;
-    }
-    catch( e ){
-        console.log( e.message());
-        return false;  // if not valid 
-    }
-}
+    if( !token ) return true;
 
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiry =  payload.exp;
+    const now = Math.floor( Date.now() / 1000);
+
+    return now >= expiry;
+}
