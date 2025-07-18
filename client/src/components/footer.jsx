@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import TrimossImg from "../assets/images/image-9.jpg"
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const Footer = () => {
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-20 h-20">
                   <img
-                    src="./src/assets/images/image-9.jpg"
+                    src={TrimossImg}
                     alt="Trimoss Logo"
                     className="object-contain w-full h-full"
                   />
