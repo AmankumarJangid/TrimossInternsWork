@@ -35,20 +35,168 @@ export default function AddressForm(/*{ productPrice }*/) {
   const [showPaymentButton, setShowPaymentButton] = useState(false);
   const [dbOrderId, setDbOrderId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("Paypal");
+  const [selectedCourier, setSelectedCourier] = useState("fedex");
 
 
 
+  const getDHLRate = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/dhl/rates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerDetails: {
+            shipperDetails: {
+              postalCode: '10001',
+              cityName: 'New York',
+              countryCode: 'US',
+            },
+            receiverDetails: {
+              postalCode: '10115',
+              cityName: 'Berlin',
+              countryCode: 'DE',
+            },
+          },
+          plannedShippingDateAndTime: '2024-08-01T10:00:00GMT+01:00',
+          unitOfMeasurement: 'metric',
+          declaredValue: 50,
+          declaredValueCurrency: 'USD',
+          packages: [
+            {
+              weight: 2.5,
+              dimensions: {
+                length: 10,
+                width: 15,
+                height: 20,
+              },
+            },
+          ],
+        }),
+      });
+  
+      const data = await response.json();
+      console.log('DHL Rate Data:', data);
+    } catch (err) {
+      console.error('❌ DHL API Full Error:', error?.response?.data || error.message);
+    }
+  };
+  
+  const createShipment = async (data: any) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/shipment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to create shipment");
+      }
+  
+      const resData = await response.json();
+      return resData;
+    } catch (error) {
+      console.error("Error creating shipment:", error);
+      return null;
+    }
+  };
+  
 
   // for handling the form submission
   const onSubmit = async (data) => {
     try {
+      if (selectedCourier === "dhl") {
+        const recipient = data.recipient.address;
+        const sender = {
+          streetLines: ["Ratanada Road"],
+          city: "Jodhpur",
+          state: "RJ",
+          postalCode: "342011",
+          countryCode: "IN",
+        };
+  
+        const payload = {
+          plannedShippingDateAndTime: new Date().toISOString(),
+          pickup: {
+            isRequested: false,
+          },
+          productCode: "P", // Use a real product code from DHL rating if you fetched one
+          accounts: [
+            {
+              number: process.env.DHL_ACCOUNT_NUMBER, 
+              typeCode: "shipper",
+            },
+          ],
+          customerDetails: {
+            shipperDetails: {
+              postalAddress: {
+                cityName: sender.city,
+                countryCode: sender.countryCode,
+                postalCode: sender.postalCode,
+                streetLines: sender.streetLines,
+              },
+              contactInformation: {
+                fullName: "Sender Name",
+                phone: "1111111111",
+                email: "sender@example.com",
+              },
+            },
+            receiverDetails: {
+              postalAddress: {
+                cityName: recipient.city,
+                countryCode: recipient.countryCode,
+                postalCode: recipient.postalCode,
+                streetLines: [recipient.street || ""],
+              },
+              contactInformation: {
+                fullName: data.recipient.name,
+                phone: data.recipient.phone,
+                email: data.recipient.email,
+              },
+            },
+          },
+          content: {
+            packages: [
+              {
+                weight: {
+                  value: 0.5,
+                  unitOfMeasurement: "KG",
+                },
+                dimensions: {
+                  length: 10,
+                  width: 10,
+                  height: 10,
+                  unitOfMeasurement: "CM",
+                },
+              },
+            ],
+            isCustomsDeclarable: true,
+            declaredValue: state?.price,
+            declaredValueCurrency: "INR",
+          },
+        };
+  
+        const res = await api.post(`/dhl/shipments`, payload);
+        const labelUrl = res?.data?.data?.shipmentTrackingNumber;
+  
+        setShippingCost(150); // or parse from response if available
+        const newAmount = state?.price + 150;
+        setTotalAmount(newAmount);
+        setOrderDetails(data);
+        setShowPaymentButton(true);
+        setPaymentMethod(data.paymentMethod);
+  
+        alert("✅ DHL Shipment created! Label: " + labelUrl);
+        return;
+      }
+  
       const payload = {
         origin: {
-          streetLines: [/*data.shipper.address.street ||*/ "Ratanada Road"],
-          city: /*data.shipper.address.city ||*/ "Jodhpur",
-          state: /*data.shipper.address.state ||*/ "RJ",
-          postalCode: /*data.shipper.address.postalCode ||*/ "342011",
-          countryCode: /*data.shipper.address.countryCode ||*/ "IN",
+          streetLines: ["Ratanada Road"],
+          city: "Jodhpur",
+          state: "RJ",
+          postalCode: "342011",
+          countryCode: "IN",
           residential: false,
         },
         destination: {
@@ -73,33 +221,34 @@ export default function AddressForm(/*{ productPrice }*/) {
             },
           },
         ],
-        serviceType: data.recipient.address.countryCode == "IN" ? "STANDARD_OVERNIGHT" : "FEDEX_INTERNATIONAL_PRIORITY", // Optional
+        serviceType:
+          data.recipient.address.countryCode === "IN"
+            ? "STANDARD_OVERNIGHT"
+            : "FEDEX_INTERNATIONAL_PRIORITY",
       };
-
+  
       const res = await api.post(`/fedex/rates`, payload);
-      console.log(res.data);
-
-      // how can I use this price to send over to the paypal where it also access base price of the product
       const totalNetCharge =
         res.data?.data?.output?.rateReplyDetails[0]?.ratedShipmentDetails[0]
           ?.totalNetCharge;
-
+  
       const shippingCostValue = parseFloat(totalNetCharge || 0);
       setShippingCost(shippingCostValue);
-
+  
       const newAmount = state?.price + shippingCostValue;
       setTotalAmount(newAmount);
       setOrderDetails(data);
       setShowPaymentButton(true);
       setPaymentMethod(data.paymentMethod);
-
-      console.log(totalNetCharge, totalAmount);
-      alert("Submitted!");
+  
+      alert("✅ FedEx Shipping rate fetched!");
     } catch (err) {
       console.error(err);
-      alert("Failed!");
+      alert("❌ Submission failed!");
     }
   };
+  
+  
 
   /// 🚩 here it handles the creation of orderes for the
   const createOrder = async () => {
@@ -326,6 +475,15 @@ export default function AddressForm(/*{ productPrice }*/) {
           />
           Residential
         </label>
+        <h2 className="text-xl font-bold">Courier Service</h2>
+        <select
+          className="border p-2 w-full"
+          value={selectedCourier}
+          onChange={(e) => setSelectedCourier(e.target.value)}
+        >
+          <option value="fedex">FedEx</option>
+          <option value="dhl">DHL</option>
+        </select>
 
         <h2 className="text-xl font-bold">Payment</h2>
         <select {...register("paymentMethod")} className="border p-2 w-full">
@@ -335,7 +493,7 @@ export default function AddressForm(/*{ productPrice }*/) {
           {/* <option value="UPI">UPI</option> */}
           <option value="CashOnDelivery">Cash on Delivery</option>
         </select>
-
+          
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded"

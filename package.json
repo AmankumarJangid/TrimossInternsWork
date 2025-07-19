@@ -27,6 +27,8 @@
     "start": "node server/src/server.js"
   },
   "dependencies": {
-    "concurrently": "^9.2.0"
+    "axios": "^1.10.0",
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.0"
   }
 }

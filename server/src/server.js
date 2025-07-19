@@ -1,5 +1,5 @@
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -13,8 +13,14 @@ import razorpayRoutes from './routes/razopayRoutes.js';
 import orderRoutes from "./routes/orderRoutes.js";
 import fedexRoutes from './fedexApi/routes/fedex.js';
 import errorHandler from './fedexApi/middleware/errorHandler.js';
+// import dhlApiRoutes from './dhlApi/index.js';
+//DHL imports
+import dhlRoutes from './dhlApi/routes/dhl.js';
+
 // Load environment variables
 dotenv.config();
+
+
 
 //Fedex imports 
 // import fedexRoutes from './routes/fedex.js';
@@ -29,6 +35,7 @@ connectDB();
 
 const app = express();
 
+// app.use("/api", dhlApiRoutes);
 
 // Security middleware
 app.use(helmet());
@@ -93,6 +100,7 @@ app.use('/api/paypal', paypalRoutes);
 app.use('/api/razorpay', razorpayRoutes);
 app.use("/api/orders", orderRoutes);
 app.use('/api/fedex', fedexRoutes);
+app.use('/api/dhl', dhlRoutes);  // ✅ This is your DHL API proxy
 
 
 
@@ -175,3 +183,5 @@ process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully');
   process.exit(0);
 });
+
+// app.use("/api", dhlApiRoutes);  // Already correct
