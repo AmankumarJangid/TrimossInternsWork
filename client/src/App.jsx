@@ -11,6 +11,7 @@ import AddressForm from "./components/addressAndPaymentForm";
 import OrderConfirmed from "./pages/OrderConfirmed";
 // import { PAYPAL_CLIENT_ID } from "../config";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import ForgotPassword from "./pages/ForgotPassword";
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/cards" element={<ProductCards />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/product-detail" element={<ProductDetail />} />
+         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/address" element={
           <PayPalScriptProvider options={{
             "client-id": "AbSO6qNMTHVDUIFxkmO-DoHa-nmzhtseqqBDUru5flbl_crtAwsSiD2ZQ16uZMYwUwOFrCagoGpNjN0L" ,

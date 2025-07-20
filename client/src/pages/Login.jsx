@@ -57,7 +57,9 @@ export default function LoginPage() {
       localStorage.setItem("userToken", response.data.data.accessToken);
       navigate("/");
     } catch (error) {
-      alert("Login failed: " + (error.response?.data?.message || "Unknown error"));
+      alert(
+        "Login failed: " + (error.response?.data?.message || "Unknown error")
+      );
     }
   };
 
@@ -151,7 +153,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
-                  onClick={() => alert("Forgot password functionality would go here")}
+                  onClick={() => navigate("/forgot-password")}
                 >
                   Forgot Password?
                 </button>
