@@ -10,7 +10,10 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  sendForgotPasswordOTP,
+  resetPasswordWithOTP,
+  verifyOtp
 } from '../controllers/userController.js';
 import { auth, admin } from '../middleware/auth.js';
 
@@ -20,6 +23,9 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/refresh-token', refreshToken);
+router.post('/forgot-password', sendForgotPasswordOTP );
+router.post('/verify-otp', verifyOtp);
+router.post('/reset-password' , resetPasswordWithOTP);
 
 // Protected routes (require authentication)
 router.post('/logout', auth, logoutUser);

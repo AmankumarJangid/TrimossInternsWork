@@ -53,6 +53,14 @@ const userSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  otp :{
+    type: String,
+    select : true // should be yes because without it can't excess the otp in the db
+  },
+  otpExpiresAt :{
+    type : Date,
+    select : true
   }
 });
 

@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import Home from "./pages/home/index";
@@ -10,11 +11,14 @@ import SignupPage from "./pages/SignUpPage";
 import AddressForm from "./components/addressAndPaymentForm";
 import OrderConfirmed from "./pages/OrderConfirmed";
 // import { PAYPAL_CLIENT_ID } from "../config";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import ForgotPassword from "./pages/ForgotPassword";
+// import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import useAuthCheck from "./utils/useAuthCheck";
+
 
 
 function App() {
+
+  useAuthCheck();
   
 
   return (
@@ -27,17 +31,7 @@ function App() {
         <Route path="/cards" element={<ProductCards />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/product-detail" element={<ProductDetail />} />
-         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/address" element={
-          <PayPalScriptProvider options={{
-            "client-id": "AbSO6qNMTHVDUIFxkmO-DoHa-nmzhtseqqBDUru5flbl_crtAwsSiD2ZQ16uZMYwUwOFrCagoGpNjN0L" ,
-            currency: "USD",
-            intent: "capture"
-          }}>
-            {/* Your other components */}
-            <AddressForm productPrice={200} /> {/* Pass your actual product price */}
-          </PayPalScriptProvider>
-        } />
+        <Route path="/address" element={<AddressForm />} /> {/* Pass your actual product price /*productPrice={1}*/ }
         <Route path="/order-confirmed" element={<OrderConfirmed />} />
       </Routes>
       <Footer />

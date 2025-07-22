@@ -2,16 +2,86 @@
 import FedExAuth from './fedexAuth.js'
 const fedexAuth = FedExAuth
 
+const TestPayload = {
+  "accountNumber": {
+    "value": "740561073"
+  },
+  "requestedShipment": {
+    "shipper": {
+      "address": {
+        "postalCode": "500001",
+        "countryCode": "IN"
+      }
+    },
+    "recipient": {
+      "address": {
+        "postalCode": "600021",
+        "countryCode": "IN"
+      }
+    },
+    "pickupType": "DROPOFF_AT_FEDEX_LOCATION",
+    "packagingType": "YOUR_PACKAGING",
+    "rateRequestType": [
+      "LIST",
+      "ACCOUNT"
+    ],
+    "customsClearanceDetail": {
+      "dutiesPayment": {
+        "paymentType": "SENDER",
+        "payor": {
+          "responsibleParty": {
+            "accountNumber": {
+              "value": "740561073"
+            },
+            "contact": {},
+            "address": {}
+          }
+        }
+      },
+      "commercialInvoice": {
+        "shipmentPurpose": "SOLD"
+      },
+      "freightOnValue": "CARRIER_RISK",
+      "commodities": [
+        {
+          "description": "Camera",
+          "weight": {
+            "value": 1,
+            "units": "KG"
+          },
+          "quantity": 1,
+          "quantityUnits": "PCS",
+          "customsValue": {
+            "amount": 100,
+            "currency": "INR"
+          },
+          "countryOfManufacture": "IN"
+        }
+      ]
+    },
+    "requestedPackageLineItems": [
+      {
+        "weight": {
+          "units": "KG",
+          "value": 1
+        }
+      }
+    ]
+  }
+}
+
 class FedExService {
-  constructor () {
+  constructor() {
     this.baseURL = process.env.FEDEX_BASE_URL
     this.accountNumber = process.env.FEDEX_ACCOUNT_NUMBER
     // Meter number not required for REST API
   }
 
   // Get shipping rates for international delivery
-  async getRates (shipmentData) {
+  async getRates(shipmentData) {
+
     try {
+      
       const payload = {
         accountNumber: {
           value: this.accountNumber
@@ -37,7 +107,7 @@ class FedExService {
               residential: shipmentData.destination.residential || false
             }
           },
-          pickupType: 'USE_SCHEDULED_PICKUP',
+          pickupType: shipmentData.destination.countryCode == "IN" ? "DROPOFF_AT_FEDEX_LOCATION" : 'USE_SCHEDULED_PICKUP',
           serviceType: shipmentData.serviceType || 'INTERNATIONAL_PRIORITY',
           packagingType: 'YOUR_PACKAGING',
           rateRequestType: [
@@ -48,7 +118,7 @@ class FedExService {
           requestedPackageLineItems: shipmentData.packages || [
             {
               weight: {
-                units: 'LB',
+                units: 'KG',
                 value: 5
               },
               dimensions: {
@@ -71,16 +141,25 @@ class FedExService {
       // return this.formatRateResponse(response.data);
       return response.data
     } catch (error) {
+      // console.log(JSON.stringify(response.data));
+      if (error.response) {
+        console.error("🟥 FedEx API Error Status:", error.response.status);
+        console.error("📨 FedEx Error Body:", JSON.stringify(error.response.data, null, 2));
+      } else {
+        console.error("❌ Axios Error:", error.message);
+      }
+
       throw new Error(
-        `Rate calculation failed: ${
-          error.response?.data?.message || error.message
+        `Rate calculation failed: ${error.response?.data?.errors?.[0]?.message ||
+        error.response?.data?.message ||
+        error.message
         }`
-      )
+      );
     }
   }
 
   // Create international shipment
-  async createShipment (shipmentData) {
+  async createShipment(shipmentData) {
     try {
       const payload = {
         labelResponseOptions: 'URL_ONLY',
@@ -196,17 +275,16 @@ class FedExService {
 
     } catch (error) {
       throw new Error(
-        `Shipment creation failed: ${
-          error.response?.data?.errors?.[0]?.message ||
-          error.response?.data?.message ||
-          error.message
+        `Shipment creation failed: ${error.response?.data?.errors?.[0]?.message ||
+        error.response?.data?.message ||
+        error.message
         }`
       )
     }
   }
 
   // Track shipment
-  async trackShipment (trackingNumber) {
+  async trackShipment(trackingNumber) {
     try {
       const payload = {
         includeDetailedScans: true,
@@ -234,7 +312,7 @@ class FedExService {
   }
 
   // Validate international address
-  async validateAddress (address) {
+  async validateAddress(address) {
     try {
       const payload = {
         addressesToValidate: [
@@ -259,14 +337,13 @@ class FedExService {
       return response.data
     } catch (error) {
       throw new Error(
-        `Address validation failed: ${
-          error.response?.data?.message || error.message
+        `Address validation failed: ${error.response?.data?.message || error.message
         }`
       )
     }
   }
 
-  formatRateResponse (data) {
+  formatRateResponse(data) {
     if (!data.output || !data.output.rateReplyDetails) {
       return { rates: [] }
     }
@@ -283,7 +360,7 @@ class FedExService {
     }
   }
 
-  formatShipmentResponse (data) {
+  formatShipmentResponse(data) {
     const shipment = data.output.transactionShipments[0]
     return {
       trackingNumber: shipment.pieceResponses[0].trackingNumber,
@@ -294,7 +371,7 @@ class FedExService {
     }
   }
 
-  formatTrackingResponse (data) {
+  formatTrackingResponse(data) {
     const trackingInfo =
       data.output.completeTrackingResults[0].trackingResults[0]
     return {

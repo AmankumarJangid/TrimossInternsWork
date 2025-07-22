@@ -1,24 +1,8 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { logout } from "../redux/slices/authSlice"; // adjust the path as needed
-
 
 const Navbar = () => {
-  const dispatch = useDispatch();
-<<<<<<< HEAD
-  const { token} = useSelector((state) => state.auth);
-  console.log(token, "userToken");
-=======
-  const { token , user , role} = useSelector((state) => state.auth);
-
-
-  console.log(token, "userToken");
-  console.log(role, "role");
-  console.log(user, "user");
->>>>>>> 94cc5fe703341e7e671d68578a0b03dbb031bc59
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const toggleMenu = () => {
@@ -59,10 +43,10 @@ const Navbar = () => {
             Custom Design
           </Link>
           <a
-            href="/product-detail"
+            href="#"
             className="text-white hover:text-gray-200 transition-colors text-base font-medium"
           >
-            About
+            About Us
           </a>
           <a
             href="#"
@@ -79,31 +63,19 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center space-x-3">
-  {token ? (
-    <button
-      onClick={() => dispatch(logout())}
-      className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
-    >
-      Logout
-    </button>
-  ) : (
-    <>
-      <button
-        onClick={() => navigate("/login")}
-        className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
-      >
-        Log in
-      </button>
-      <button
-        onClick={() => navigate("/signup")}
-        className="border-2 border-white text-white px-6 py-2 rounded-full text-base font-medium hover:bg-white hover:text-[#B8956A] transition-colors"
-      >
-        Sign up
-      </button>
-    </>
-  )}
-</div>
-
+          <button
+            onClick={() => navigate("/login")}
+            className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
+          >
+            Log in
+          </button>
+          <button
+            onClick={() => navigate("/signup")}
+            className="border-2 border-white text-white px-6 py-2 rounded-full text-base font-medium hover:bg-white hover:text-[#B8956A] transition-colors"
+          >
+            Sign up
+          </button>
+        </div>
 
         <button
           onClick={toggleMenu}
@@ -123,24 +95,24 @@ const Navbar = () => {
             >
               Home
             </Link>
-                      <Link
-            to="/shop"
-            className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
-          >
-            Shop
-          </Link>
+            <a
+              href="#"
+              className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
+            >
+              Shop
+            </a>
             <Link
               to="/cards"
               className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
             >
               Collections
             </Link>
-            <Link
-              to="/product-detail"
+            <a
+              href="#"
               className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
             >
               Custom Design
-            </Link>
+            </a>
             <a
               href="#"
               className="text-white hover:text-gray-200 transition-colors text-base font-medium py-2"
@@ -161,40 +133,19 @@ const Navbar = () => {
             </a>
 
             <div className="flex flex-col space-y-3 pt-4 border-t border-white/20">
-  {token ? (
-    <button
-      onClick={() => {
-        dispatch(logout());
-        setIsMenuOpen(false);
-      }}
-      className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
-    >
-      Logout
-    </button>
-  ) : (
-    <>
-      <button
-        onClick={() => {
-          navigate("/login");
-          setIsMenuOpen(false);
-        }}
-        className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
-      >
-        Log in
-      </button>
-      <button
-        onClick={() => {
-          navigate("/signup");
-          setIsMenuOpen(false);
-        }}
-        className="border-2 border-white text-white px-6 py-2 rounded-full text-base font-medium hover:bg-white hover:text-[#B8956A] transition-colors"
-      >
-        Sign up
-      </button>
-    </>
-  )}
-</div>
-
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
+              >
+                Log in
+              </button>
+              <button
+                onClick={() => navigate("/signup")}
+                className="border-2 border-white text-white px-6 py-2 rounded-full text-base font-medium hover:bg-white hover:text-[#B8956A] transition-colors"
+              >
+                Sign up
+              </button>
+            </div>
           </div>
         </div>
       )}
