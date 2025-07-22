@@ -8,12 +8,11 @@ import { logout } from "../redux/slices/authSlice"; // adjust the path as needed
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { token , user , role} = useSelector((state) => state.auth);
+  const { token , user,  } = useSelector((state) => state.auth);
 
-
-  console.log(token, "userToken");
-  console.log(role, "role");
-  console.log(user, "user");
+  // console.log(token, "userToken");
+  // console.log(user, "user");
+  // console.log( user?.role, "user role");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const toggleMenu = () => {
@@ -75,12 +74,24 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center space-x-3">
   {token ? (
+    <>
     <button
       onClick={() => dispatch(logout())}
       className="bg-white text-[#B8956A] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
     >
       Logout
     </button>
+
+      {user?.role === "admin" && (
+      <button
+        onClick={() => navigate("/admin")}
+        className="ml-2 bg-[#B8956A] text-white px-6 py-2 rounded-full text-base font-medium hover:bg-[#a27f56] transition-colors"
+      >
+        Admin Panel
+      </button>
+    )}
+    
+    </>
   ) : (
     <>
       <button
@@ -157,6 +168,17 @@ const Navbar = () => {
 
             <div className="flex flex-col space-y-3 pt-4 border-t border-white/20">
   {token ? (
+    <>
+    {user?.role === "admin" && (
+      <button
+      onClick={() => { navigate("/admin") }
+      }
+      className="bg-white text-[#ff0909] px-6 py-2 rounded-full text-base font-medium hover:bg-gray-100 transition-colors"
+    >
+      Admin Panel
+    </button>
+    )}
+
     <button
       onClick={() => {
         dispatch(logout());
@@ -166,6 +188,8 @@ const Navbar = () => {
     >
       Logout
     </button>
+
+</>
   ) : (
     <>
       <button

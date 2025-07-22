@@ -75,6 +75,8 @@ export default function AddressForm() {
       console.log("Phone:", address.phone);
       console.log("StateCode " , address.stateCode);
 
+      console.log(data.recipient.address.residential);
+
       const payload = {
         origin: {
           streetLines: [/*data.shipper.address.street ||*/ "Ratanada Road"],
@@ -90,7 +92,7 @@ export default function AddressForm() {
           state: data.recipient.address.stateCode.toUpperCase() || "ON",
           postalCode: data.recipient.address.postalCode.toUpperCase() || "M5H 2N2",
           countryCode: data.recipient.address.countryCode.toUpperCase() || "CA",
-          residential: data.recipient.address.residential,
+          residential: data.recipient.address?.residential[1] == "on",
         },
         packages: [
           {
@@ -119,7 +121,8 @@ export default function AddressForm() {
       setPaymentMethod(data.paymentMethod);
     } catch (err) {
       console.error(err);
-      alert("Failed to calculate shipping.");
+      console.error(err.response.data.message);
+      alert( err.response.data.message);
     }
   };
 
@@ -231,31 +234,101 @@ export default function AddressForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-        {user.role === "admin" && (
+        {user?.role === "admin" && (
           <>
             <h2 className="text-xl font-bold">Shipper Info</h2>
-            <input{...register("shipper.name")} placeholder="Name" className="border p-2 w-full"
+            <h2 className="text-xl font-bold">Recipient Info</h2>
+
+        <div className="relative mb-2">
+          <input {...register("shipper.name", { required: "Name is Required" })} placeholder="Name" className="border p-2 w-full" />
+          <span className="absolute right-2 top-2 text-red-500 text-xl leading-none">*</span>
+          
+        </div>
+
+        <div className="relative mb-2">
+        <input {...register("shipper.company")} placeholder="Company" className="border p-2 w-full" />
+        <span className="absolute right-2 top-2 text-red-500 text-xl leading-none">*</span>
+        </div>
+
+        {/* <input {...register(shipper"recipient.phone", { required: true })} placeholder="Phone" className="border p-2 w-full" /> */}
+
+        <CountryStateSelector
+          onChange={({ country, state }) => {
+            setValue("shipper.address.countryCode", country?.value || "");
+            setValue("shipper.address.state", state?.name || "");
+            setValue("shipper.address.stateCode" ,state?.value || "")
+            setValue("shipper.address.dialCode", country?.dialCode || ""); // Set dial code
+          }}
+        />
+
+
+
+        <input
+          type="hidden"
+          {...register("shipper.address.countryCode")}
+        />
+        <input
+          type="hidden"
+          {...register("shipper.address.state")}
+        />
+        <input
+          type="hidden"
+          {...register("shipper.address.stateCode")}
+        />
+
+        <div className="mt-4">  {/* mobile number selector */}
+          <label className="block mb-1">Phone Number</label>
+          <div className="flex items-center gap-2">
+            <span className="border px-3 py-2 bg-gray-100 rounded text-sm">
+              +{watch("shipper.address.dialCode") || "__"}
+            </span>
+            <input
+              type="tel"
+              {...register("shipper.address.phone", { required: "Phone is required" })}
+              className="border p-2 flex-1 rounded w-full"
+              placeholder="Enter phone number"
             />
-            <input {...register("shipper.company")} placeholder="Company" className="border p-2 w-full"
-            />
-            <input  {...register("shipper.phone")} placeholder="Phone" className="border p-2 w-full"
-            />
-            <input  {...register("shipper.address.street")} placeholder="Street" className="border p-2 w-full"
-            />
-            <input {...register("shipper.address.city")} placeholder="City" className="border p-2 w-full"
-            />
-            <input {...register("shipper.address.state")} placeholder="State" className="border p-2 w-full"
-            />
-            <input {...register("shipper.address.postalCode")} placeholder="Postal Code" className="border p-2 w-full"
-            />
-            <input {...register("shipper.address.countryCode")} placeholder="Country Codem" className="border p-2 w-full" />
+          </div>
+          {errors?.recipient?.address?.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.recipient.address.phone.message}</p>
+          )}
+        </div>
+
+        {/* <input {...register("recipient.address.countryCode", { required: true })} placeholder="Country Code" className="border p-2 w-full" /> */}
+
+        {/* <input {...register("recipient.address.state", { required: true })} placeholder="State" className="border p-2 w-full" /> */}
+
+        <input {...register("shipper.address.city", { required: true })} placeholder="City" className="border p-2 w-full" />
+
+        <input {...register("shipper.address.street", { required: true })} placeholder="Street" className="border p-2 w-full" />
+
+        <input {...register("shipper.address.postalCode", { required: true })} placeholder="Postal Code" className="border p-2 w-full" />
+
+
+        <label className="flex items-center gap-2">
+          <input type="checkbox" {...register("shipper.address.residential")} />
+          Residential
+        </label>
+
           </>)}
+
+
 
         {/*💁‍♂️Recipients info*/}
         <h2 className="text-xl font-bold">Recipient Info</h2>
-        <input {...register("recipient.name", { required: true })} placeholder="Name" className="border p-2 w-full" />
 
+        <div className="relative mb-2">
+          <input {...register("recipient.name", { required: true })} placeholder="Name" className="border p-2 w-full" />
+          <span className="absolute right-2 top-2 text-red-500 text-xl leading-none">*</span>
+          {errors?.recipient?.address?.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.recipient.address.phone.message}</p>
+          )}
+        </div>
+
+        <div className="relative mb-2">
         <input {...register("recipient.company")} placeholder="Company" className="border p-2 w-full" />
+        <span className="absolute right-2 top-2 text-red-500 text-xl leading-none">*</span>
+        </div>
 
         {/* <input {...register("recipient.phone", { required: true })} placeholder="Phone" className="border p-2 w-full" /> */}
 

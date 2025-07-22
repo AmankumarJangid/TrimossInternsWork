@@ -515,12 +515,14 @@ export const resetPasswordWithOTP = async (req, res) =>{
     return res.status(400).json({ message: 'Invalid or expired OTP' });
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 12 );
+  
 
-  user.password = hashedPassword;
+  user.password = newPassword;
   user.otp = null;
   user.otpExpiresAt = null;
   await user.save();
+
+  console.log(user.password);
 
   res.json({message : "Password is successfully changed"});
 

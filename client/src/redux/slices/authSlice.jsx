@@ -2,7 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: localStorage.getItem("userDetails") || null,
+  user: JSON.parse(localStorage.getItem("userDetails")) || null,
   token: localStorage.getItem("userToken") || null, // default role for now
 };
 
@@ -12,6 +12,7 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       state.user = action.payload.user;
+      console.log(state.user);
       state.token = action.payload.token; // allow dynamic role
       localStorage.setItem("userToken", action.payload.token);
       localStorage.setItem("userDetails", JSON.stringify(action.payload.user));

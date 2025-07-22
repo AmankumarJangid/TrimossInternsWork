@@ -5,6 +5,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  permanentDeleteProduct,
   updateInventory,
   getFeaturedProducts,
   getProductsByCategory
@@ -17,6 +18,7 @@ import {
   validateProductId,
   validateUpdateInventory
 } from '../middleware/productValidation.js';
+import upload from '../middleware/cloudinaryUploader.js';
 
 const router = express.Router();
 
@@ -27,9 +29,43 @@ router.get('/category/:category/:subcategory', getProductsByCategory);
 router.get('/:id', getProduct);
 
 // Protected routes (require authentication + admin role)
-router.post('/', auth, admin, validateCreateProduct, createProduct);
-router.put('/:id', auth, admin, validateUpdateProduct, updateProduct);
+// Create product with image uploads
+router.post(
+  '/',
+  auth,
+  admin,
+  upload.fields([
+    { name: 'primary', maxCount: 1 },
+    { name: 'gallery', maxCount: 4 },
+    { name: 'technical', maxCount: 5 },
+    { name: 'roomScenes', maxCount: 5 }
+  ]),
+  validateCreateProduct,
+  createProduct
+);
+
+// Update product (image replacements optional)
+router.put(
+  '/:id',
+  auth,
+  admin,
+  upload.fields([
+    { name: 'primary', maxCount: 1 },
+    { name: 'gallery', maxCount: 4 },
+    { name: 'technical', maxCount: 5 },
+    { name: 'roomScenes', maxCount: 5 }
+  ]),
+  validateUpdateProduct,
+  updateProduct
+);
+
+// Soft delete (hide) product
 router.delete('/:id', auth, admin, validateProductId, deleteProduct);
+
+// Permanent delete (remove DB entry + Cloudinary assets)
+router.delete('/permanent/:id', auth, admin, validateProductId, permanentDeleteProduct);
+
+// Update inventory
 router.patch('/:id/inventory', auth, admin, validateUpdateInventory, updateInventory);
 
 export default router;

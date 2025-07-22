@@ -2,21 +2,9 @@
 import mongoose from 'mongoose';
 
 const dimensionSchema = new mongoose.Schema({
-  length: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  width: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  thickness: {
-    type: Number,
-    required: true,
-    min: 0
-  },
+  length: { type: Number, required: true, min: 0 },
+  width: { type: Number, required: true, min: 0 },
+  thickness: { type: Number, min: 0 },
   unit: {
     type: String,
     enum: ['mm', 'cm', 'inch'],
@@ -25,97 +13,42 @@ const dimensionSchema = new mongoose.Schema({
 }, { _id: false });
 
 const colorVariantSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
+  name: { type: String, required: true, trim: true },
   hexCode: {
     type: String,
     required: true,
     match: /^#[0-9A-F]{6}$/i
-  },
-  opacity: {
-    type: Number,
-    min: 0,
-    max: 100,
-    default: 100
-  },
-  finish: {
-    type: String,
-    enum: ['glossy', 'matte', 'frosted', 'textured', 'iridescent'],
-    default: 'glossy'
   }
 }, { _id: false });
 
 const priceSchema = new mongoose.Schema({
-  basePrice: {
-    type: Number,
-    required: true,
-    min: 0
-  },
+  basePrice: { type: Number, required: true, min: 0 },
   currency: {
     type: String,
     default: 'USD',
     enum: ['USD', 'EUR', 'GBP', 'INR']
   },
-  pricePerUnit: {
-    type: String,
-    enum: ['sqft', 'sqm', 'piece', 'sheet'],
-    default: 'sqft'
-  },
-  wholesalePrice: {
-    type: Number,
-    min: 0
-  },
-  minimumOrderQuantity: {
-    type: Number,
-    default: 1,
-    min: 1
-  }
+  minimumOrderQuantity: { type: Number, default: 1, min: 1 }
 }, { _id: false });
 
-const technicalSpecsSchema = new mongoose.Schema({
-  material: {
+const dynamicAttributeSchema = new mongoose.Schema({
+  key: {
     type: String,
-    enum: ['glass', 'ceramic', 'stone', 'metal', 'mixed'],
-    default: 'glass'
+    required: true,
+    trim: true,
+    maxlength: 50,
+    lowercase: true,
+    match: /^[a-z0-9_]+$/
   },
-  waterAbsorption: {
-    type: Number,
-    min: 0,
-    max: 100
-  },
-  slipResistance: {
+  value: mongoose.Schema.Types.Mixed,
+  dataType: {
     type: String,
-    enum: ['R9', 'R10', 'R11', 'R12', 'R13']
+    enum: ['string', 'number', 'boolean', 'date'],
+    required: true
   },
-  frostResistance: {
-    type: Boolean,
-    default: false
-  },
-  heatResistance: {
-    type: Number, // in Celsius
-    min: -50,
-    max: 500
-  },
-  chemicalResistance: {
-    type: String,
-    enum: ['low', 'medium', 'high'],
-    default: 'medium'
-  },
-  installation: {
-    adhesive: {
-      type: String,
-      enum: ['standard', 'epoxy', 'cement-based', 'polyurethane']
-    },
-    grout: {
-      type: String,
-      enum: ['sanded', 'unsanded', 'epoxy', 'urethane']
-    },
-    substrate: [String] // e.g., ['drywall', 'concrete', 'wood', 'metal']
-  }
-}, { _id: false });
+  displayName: { type: String, trim: true },
+  unit: { type: String, trim: true }
+}, { _id: false, timestamps: false });
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -126,7 +59,7 @@ const productSchema = new mongoose.Schema({
   },
   
   sku: {
-    type: String,
+    type: String, 
     required: [true, 'SKU is required'],
     unique: true,
     trim: true,
@@ -146,92 +79,56 @@ const productSchema = new mongoose.Schema({
     }
   },
   
-  category: {
-    primary: {
-      type: String,
-      required: true,
-      enum: ['wall-tiles', 'floor-tiles', 'decorative-tiles', 'pool-tiles', 'backsplash', 'borders', 'medallions', 'custom']
-    },
-    secondary: {
-      type: String,
-      enum: ['bathroom', 'kitchen', 'living-room', 'outdoor', 'commercial', 'residential']
-    },
-    style: {
-      type: String,
-      enum: ['modern', 'traditional', 'contemporary', 'rustic', 'industrial', 'art-deco', 'mediterranean']
-    }
-  },
-  
-  mosaicType: {
-    type: String,
+  categories: {
+    type: [String],
     required: true,
-    enum: ['sheet-mounted', 'individual-tiles', 'mesh-backed', 'paper-faced', 'dot-mounted']
-  },
-  
-  pattern: {
-    type: String,
-    enum: ['square', 'hexagon', 'subway', 'herringbone', 'basketweave', 'random', 'linear', 'brick', 'custom']
+    index: true,
+    validate: {
+      validator: v => v.length > 0,
+      message: 'At least one category is required'
+    }
   },
   
   dimensions: {
-    individual: dimensionSchema,
-    sheet: dimensionSchema,
-    coverage: {
-      type: Number, // square feet per sheet
-      min: 0
-    }
+    type: dimensionSchema,
+    required: true
   },
   
   colorVariants: [colorVariantSchema],
   
-  images: {
-    primary: {
-      type: String,
-      required: [true, 'Primary image is required']
-    },
-    gallery: [String],
-    technical: [String], // installation guides, spec sheets
-    roomScenes: [String] // lifestyle images
+  images: { // works find with cloudinary 
+  primary: {
+    url: { type: String, required: true },
+    public_id: { type: String, required: true },
   },
+  gallery: [{
+    url: String,
+    public_id: String,
+  }],
+  technical: [{
+    url: String,
+    public_id: String,
+  }],
+  roomScenes: [{
+    url: String,
+    public_id: String,
+  }]
+},
+
   
   pricing: priceSchema,
   
   inventory: {
-    quantity: {
-      type: Number,
-      required: true,
-      min: 0,
-      default: 0
-    },
-    lowStockThreshold: {
-      type: Number,
-      default: 10,
-      min: 0
-    },
+    quantity: { type: Number, required: true, min: 0, default: 0 },
+    lowStockThreshold: { type: Number, default: 10, min: 0 },
     status: {
       type: String,
       enum: ['in-stock', 'low-stock', 'out-of-stock', 'discontinued', 'pre-order'],
       default: 'in-stock'
-    },
-    location: {
-      warehouse: String,
-      aisle: String,
-      shelf: String
     }
   },
   
-  technicalSpecs: technicalSpecsSchema,
-  
-  applications: {
-    suitable: [{
-      type: String,
-      enum: ['wall', 'floor', 'ceiling', 'backsplash', 'shower', 'pool', 'spa', 'fireplace', 'outdoor']
-    }],
-    notSuitable: [{
-      type: String,
-      enum: ['wall', 'floor', 'ceiling', 'backsplash', 'shower', 'pool', 'spa', 'fireplace', 'outdoor', 'heavy-traffic']
-    }]
-  },
+  dynamicAttributes: [dynamicAttributeSchema],
   
   certifications: [{
     name: String,
@@ -241,18 +138,9 @@ const productSchema = new mongoose.Schema({
   }],
   
   supplier: {
-    name: {
-      type: String,
-      required: true
-    },
-    contactInfo: {
-      email: String,
-      phone: String
-    },
-    leadTime: {
-      type: Number, // in days
-      default: 14
-    }
+    name: { type: String, required: true },
+    contactInfo: { email: String, phone: String },
+    leadTime: { type: Number, default: 14 }
   },
   
   seo: {
@@ -262,20 +150,14 @@ const productSchema = new mongoose.Schema({
     slug: {
       type: String,
       unique: true,
-      lowercase: true
+      lowercase: true,
+      trim: true,
+      match: [/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens']
     }
   },
   
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  
-  isFeatured: {
-    type: Boolean,
-    default: false
-  },
-  
+  isActive: { type: Boolean, default: true },
+  isFeatured: { type: Boolean, default: false },
   tags: [String],
   
   relatedProducts: [{
@@ -284,25 +166,12 @@ const productSchema = new mongoose.Schema({
   }],
   
   reviews: {
-    averageRating: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: 0
-    },
-    totalReviews: {
-      type: Number,
-      default: 0,
-      min: 0
-    }
+    averageRating: { type: Number, min: 0, max: 5, default: 0 },
+    totalReviews: { type: Number, default: 0, min: 0 }
   },
   
   salesData: {
-    totalSold: {
-      type: Number,
-      default: 0,
-      min: 0
-    },
+    totalSold: { type: Number, default: 0, min: 0 },
     lastSoldDate: Date
   }
 }, {
@@ -311,97 +180,74 @@ const productSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for better query performance
+// Indexes
 productSchema.index({ sku: 1 });
-productSchema.index({ 'category.primary': 1, 'category.secondary': 1 });
 productSchema.index({ isActive: 1, isFeatured: 1 });
 productSchema.index({ 'pricing.basePrice': 1 });
 productSchema.index({ 'inventory.status': 1 });
 productSchema.index({ 'seo.slug': 1 });
 productSchema.index({ tags: 1 });
-productSchema.index({ createdAt: -1 });
+productSchema.index({ 'dynamicAttributes.key': 1, 'dynamicAttributes.value': 1 });
 
-// Virtual for calculating price per square foot
-productSchema.virtual('pricePerSqFt').get(function() {
-  const pricePerUnit = this?.pricing?.pricePerUnit;
-  const basePrice = this?.pricing?.basePrice;
-
-  if (!pricePerUnit || basePrice == null) return null;
-
-  if (pricePerUnit === 'sqft') {
-    return basePrice;
-  } else if (pricePerUnit === 'sqm') {
-    return basePrice * 0.092903;
-  } else if (pricePerUnit === 'sheet' && this.dimensions?.sheet?.coverage) {
-    return basePrice / this.dimensions.sheet.coverage;
+// Auto-generate tags from public dynamic attributes
+productSchema.pre('save', function(next) {
+  if (this.isModified('dynamicAttributes')) {
+    this.tags = this.dynamicAttributes
+      .filter(attr => !attr.unit) // Exclude technical specs
+      .map(attr => `${attr.key}:${attr.value}`.toLowerCase());
   }
-
-  return null;
+  next();
 });
 
-// Virtual for inventory status
-productSchema.virtual('inventoryStatus').get(function() {
+// Auto-update inventory status
+productSchema.pre('save', function(next) {
   if (this.inventory.quantity === 0) {
-    return 'out-of-stock';
+    this.inventory.status = 'out-of-stock';
   } else if (this.inventory.quantity <= this.inventory.lowStockThreshold) {
-    return 'low-stock';
+    this.inventory.status = 'low-stock';
+  } else {
+    this.inventory.status = 'in-stock';
   }
-  return 'in-stock';
+  next();
 });
 
-// Pre-save middleware to generate slug
-productSchema.pre('save', function(next) {
-  if (this.isModified('name') && !this.seo.slug) {
-    this.seo.slug = this.name.toLowerCase()
+// Improved slug generation
+productSchema.pre('save', async function(next) {
+  if (this.isModified('name') || !this.seo?.slug) {
+    const baseSlug = this.name
+      .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .replace(/(^-|-$)/g, '');
+    
+    let uniqueSlug = baseSlug;
+    let counter = 1;
+    
+    while (true) {
+      const existing = await mongoose.model('Product').findOne(
+        { 'seo.slug': uniqueSlug, _id: { $ne: this._id } }
+      );
+      if (!existing) break;
+      uniqueSlug = `${baseSlug}-${counter++}`;
+    }
+    
+    this.seo = this.seo || {};
+    this.seo.slug = uniqueSlug;
   }
   next();
 });
 
-// Pre-save middleware to update inventory status
-productSchema.pre('save', function(next) {
-  this.inventory.status = this.inventoryStatus;
-  next();
-});
-
-// Static method to find products by category
-productSchema.statics.findByCategory = function(category, subcategory = null) {
-  const query = { 'category.primary': category, isActive: true };
-  if (subcategory) {
-    query['category.secondary'] = subcategory;
-  }
-  return this.find(query);
-};
-
-// Static method to find featured products
-productSchema.statics.findFeatured = function() {
-  return this.find({ isFeatured: true, isActive: true });
-};
-
-// Static method to find products in stock
-productSchema.statics.findInStock = function() {
-  return this.find({ 
-    'inventory.status': { $in: ['in-stock', 'low-stock'] },
-    isActive: true 
+// Query helper for attributes
+productSchema.query.byAttribute = function(key, value) {
+  return this.where({
+    'dynamicAttributes': {
+      $elemMatch: { key, value }
+    }
   });
 };
 
-// Instance method to check if product is available
-productSchema.methods.isAvailable = function() {
-  return this.isActive && this.inventory.quantity > 0;
-};
-
-// Instance method to reduce inventory
-productSchema.methods.reduceInventory = function(quantity) {
-  if (this.inventory.quantity >= quantity) {
-    this.inventory.quantity -= quantity;
-    this.salesData.totalSold += quantity;
-    this.salesData.lastSoldDate = new Date();
-    return this.save();
-  } else {
-    throw new Error('Insufficient inventory');
-  }
+// Find by slug
+productSchema.statics.findBySlug = function(slug) {
+  return this.findOne({ 'seo.slug': slug });
 };
 
 export default mongoose.model('Product', productSchema);

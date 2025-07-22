@@ -63,10 +63,11 @@ export default function LoginPage() {
       if( !response.data ) alert( "Login Successfully");
       console.log("✅ Login successful:", response.data);
 
-      const userData = response.data;
+      const userData = response.data.data.user;
 
       /// updates in user credentials storage
       console.log("user Data " , userData);
+      
       dispatch(setCredentials({ user: userData, token: response.data.data.accessToken }));
 
       localStorage.setItem("userToken", response.data.data.accessToken);

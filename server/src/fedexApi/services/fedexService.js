@@ -149,12 +149,17 @@ class FedExService {
         console.error("❌ Axios Error:", error.message);
       }
 
+      if( error.response?.data?.errors[0]?.code == "DESTINATION.POSTALCODE.MISSING.ORINVALID"){
+        throw new Error(`Rate calculation failed: Invalid Postal/Zip code`);
+      }
       throw new Error(
         `Rate calculation failed: ${error.response?.data?.errors?.[0]?.message ||
         error.response?.data?.message ||
         error.message
         }`
       );
+
+    
     }
   }
 
