@@ -178,6 +178,8 @@ export default function SignupPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       placeholder="Confirm"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
                       className="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all duration-200"
                     />
                     <button

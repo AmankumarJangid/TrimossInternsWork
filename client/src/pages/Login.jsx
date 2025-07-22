@@ -70,9 +70,6 @@ export default function LoginPage() {
       
       dispatch(setCredentials({ user: userData, token: response.data.data.accessToken }));
 
-      localStorage.setItem("userToken", response.data.data.accessToken);
-      localStorage.setItem("userDetail" , response.data.data.user);
-
       navigate("/");
     } catch (error) {
       alert("Login failed: " + (error.response?.data?.message || "Unknown error"));

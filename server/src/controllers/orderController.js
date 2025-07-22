@@ -17,19 +17,28 @@ export const createOrder = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // To avoid N+1 queries, fetch all products at once
+    const productIds = products.map(p => p.product);
+    const foundProducts = await Product.find({ '_id': { $in: productIds } });
+    const productMap = new Map(foundProducts.map(p => [p._id.toString(), p]));
+
+    let totalAmount = 0;
     const orderProducts = await Promise.all(products.map(async (item) => {
-      const product = await Product.findById(item.product);
-      if (!product) throw new Error("Product not found");
+      const product = productMap.get(item.product);
+      if (!product) throw new Error(`Product with ID ${item.product} not found`);
+      const itemTotal = product.pricing.basePrice * item.quantity;
+      totalAmount += itemTotal;
       return {
         product: product._id,
         quantity: item.quantity,
-        price: product.price,
+        price: product.pricing.basePrice,
       };
     }));
 
     const newOrder = new Order({
       user: userId,
       products: orderProducts,
+      totalAmount,
       payment,
       shipping,
       fedex,
