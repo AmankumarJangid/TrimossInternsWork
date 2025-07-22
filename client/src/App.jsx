@@ -16,6 +16,7 @@ import PrivateAdminRoute from './routes/privateAdminRoutes'
 import NotFound from './pages/pageNotFound404'
 import AdminLayout from './layout/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import ForgotPassword from './pages/ForgotPassword'
 
 function App () {
   useAuthCheck()
@@ -33,6 +34,7 @@ function App () {
         <Route path='/address' element={<AddressForm />} />{' '}
         {/* Pass your actual product price /*productPrice={1}*/}
         <Route path='/order-confirmed' element={<OrderConfirmed />} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
         
 
         {/* Admin Pages */}

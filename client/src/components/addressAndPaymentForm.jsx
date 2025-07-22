@@ -43,6 +43,7 @@ export default function AddressForm() {
   const navigate = useNavigate();
 
   //   const role = "user";
+  // eslint-disable-next-line no-unused-vars
   const { user, token } = useSelector((state) => state.auth); // added user and token access 
   const { state } = useLocation();
   const [shippingCost, setShippingCost] = useState(0);
@@ -53,6 +54,7 @@ export default function AddressForm() {
   const [paymentMethod, setPaymentMethod] = useState("PayPal");
 
   //country code selector 
+  // eslint-disable-next-line no-unused-vars
   const [recipientLocation, setRecipientLocation] = useState({
     country: null,
     state: null,

@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch , useSelector } from "react-redux";
+import { useDispatch  } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function LoginPage() {
 
-  const {user, token} =  useSelector((state) => state.auth);
+  // const {user, token} =  useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
 

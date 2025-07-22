@@ -1,5 +1,0 @@
-#ignore these
-node_modules/
-.env
-respones.json
-product.json
