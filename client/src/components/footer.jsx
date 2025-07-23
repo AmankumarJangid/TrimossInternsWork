@@ -16,7 +16,7 @@ const Footer = () => {
     <div className="bg-black pt-24">
       <footer className="rounded-tl-[50px] rounded-tr-[50px] bg-white py-16 md:py-20  mt-40 -top-16 ">
         <div className="max-w-7xl mx-auto px-4 md:px-8 ">
-  <div className="flex flex-col lg:grid lg:grid-cols-5 gap-8 lg:gap-12 mb-16">
+  <div className="flex flex-col gap-12 lg:grid lg:grid-cols-5 gap-8 lg:gap-12 mb-16">
   <div className="lg:col-span-2">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-20 h-20">
@@ -55,6 +55,8 @@ const Footer = () => {
                 </form>
               </div>
             </div>
+            <div className="flex flex-col gap-12 sm:gap-8 lg:col-span-3 lg:grid lg:grid-cols-3">
+
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-6">
                 Company
@@ -166,8 +168,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="https://www.instagram.com/trimoss.in
-"
+                    href="https://www.instagram.com/trimoss.in"
                     className="text-gray-700 hover:text-gray-900 transition-colors"
                   >
                     Instagram
@@ -190,6 +191,7 @@ const Footer = () => {
                   </a>
                 </li>
               </ul>
+            </div>
             </div>
           </div>
 
