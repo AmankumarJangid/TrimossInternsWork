@@ -27,7 +27,6 @@
     "start": "node server/src/server.js"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@paypal/checkout-server-sdk": "^1.0.3",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
@@ -44,8 +43,5 @@
     "mongoose": "^8.16.1",
     "nodemon": "^3.1.10",
     "react-hook-form": "^7.59.0"
-=======
-    "concurrently": "^9.2.0"
->>>>>>> 94cc5fe703341e7e671d68578a0b03dbb031bc59
   }
 }
