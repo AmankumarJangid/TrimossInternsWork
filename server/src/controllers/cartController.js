@@ -151,7 +151,7 @@ export const updateCartItem = async (req, res) => {
     }
 
     cart.items[itemIndex].quantity = quantity;
-    cart.items[itemIndex].totalPrice = cart.items[itemIndex].pricing.basePrice * quantity;
+    cart.items[itemIndex].totalPrice = cart.items[itemIndex].price * quantity;
 
     await cart.save();
     await cart.populate('items.product', 'name price image category stock');

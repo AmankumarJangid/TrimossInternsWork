@@ -3,9 +3,6 @@ import dotenv from "dotenv"
 
 dotenv.config();
 
-console.log( process.env.API_KEY);
-
-
 const connectDB = async () =>{
     try{
         console.log("Trying to connect");
@@ -19,9 +16,4 @@ const connectDB = async () =>{
     }
 
 };
-
-
-connectDB();
 export default connectDB;
-
-
