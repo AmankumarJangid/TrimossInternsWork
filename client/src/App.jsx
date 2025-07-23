@@ -5,8 +5,9 @@ import Footer from './components/footer'
 import ProductCards from './pages/ProductPage/cards'
 import ShopPage from './pages/shop-page'
 import ProductDetail from './product-detail'
-import LoginPage from './pages/Login'
-import SignupPage from './pages/SignUpPage'
+import LoginPage from './pages/auth/Login'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import SignupPage from './pages/auth/SignUpPage'
 import AddressForm from './components/addressAndPaymentForm'
 import OrderConfirmed from './pages/OrderConfirmed'
 // import { PAYPAL_CLIENT_ID } from "../config";
@@ -16,7 +17,8 @@ import PrivateAdminRoute from './routes/privateAdminRoutes'
 import NotFound from './pages/pageNotFound404'
 import AdminLayout from './layout/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
-import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/auth/ResetPassword'
+import VerifyOtp from './pages/auth/VerifyOtp'
 
 function App () {
   useAuthCheck()
@@ -35,6 +37,9 @@ function App () {
         {/* Pass your actual product price /*productPrice={1}*/}
         <Route path='/order-confirmed' element={<OrderConfirmed />} />
         <Route path='/forgot-password' element={<ForgotPassword/>} />
+        <Route path='/verify-otp' element={<VerifyOtp/>}/>
+        <Route path='/reset-password' element={<ResetPassword/>}/>
+
         
 
         {/* Admin Pages */}

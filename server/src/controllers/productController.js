@@ -93,25 +93,25 @@ export const getProduct = async (req, res) => {
 // Create new product
 
 
-const buildImages = async (files) => {
-  const primary = files.primary?.[0]
-    ? await uploadToCloudinary(files.primary[0])
-    : undefined;
+// const buildImages = async (files) => {
+//   const primary = files.primary?.[0]
+//     ? await uploadToCloudinary(files.primary[0])
+//     : undefined;
 
-  const gallery = files.gallery
-    ? await Promise.all(files.gallery.map(uploadToCloudinary))
-    : [];
+//   const gallery = files.gallery
+//     ? await Promise.all(files.gallery.map(uploadToCloudinary))
+//     : [];
 
-  const technical = files.technical
-    ? await Promise.all(files.technical.map(uploadToCloudinary))
-    : [];
+//   const technical = files.technical
+//     ? await Promise.all(files.technical.map(uploadToCloudinary))
+//     : [];
 
-  const roomScenes = files.roomScenes
-    ? await Promise.all(files.roomScenes.map(uploadToCloudinary))
-    : [];
+//   const roomScenes = files.roomScenes
+//     ? await Promise.all(files.roomScenes.map(uploadToCloudinary))
+//     : [];
 
-  return { primary, gallery, technical, roomScenes };
-};
+//   return { primary, gallery, technical, roomScenes };
+// };
 
 export const createProduct = async (req, res) => {
   try {
@@ -122,13 +122,27 @@ export const createProduct = async (req, res) => {
     
     console.log( req.files);
 
-    const images = await buildImages(files);
 
-    console.log(  images);
+    // extract images from the uploaded urls 
+    const extractImages = (field) => {
+      if (!files[field]) return field === 'primary' ? null : [];
+      return field === 'primary'
+        ? { url: files[field][0].path, public_id: files[field][0].filename }
+        : files[field].map((f) => ({
+            url: f.path,
+            public_id: f.filename
+          }));
+    };
+
     console.log( "isFiles available ", files!= undefined)
     const product = new Product({
       ...req.body,
-      images,
+       images: {
+        primary: extractImages('primary'),
+        gallery: extractImages('gallery'),
+        technical: extractImages('technical'),
+        roomScenes: extractImages('roomScenes')
+      },
       dynamicAttributes: req.body.dynamicAttributes || []
     });
 

@@ -16,8 +16,8 @@ const Footer = () => {
     <div className="bg-black pt-24">
       <footer className="rounded-tl-[50px] rounded-tr-[50px] bg-white py-16 md:py-20  mt-40 -top-16 ">
         <div className="max-w-7xl mx-auto px-4 md:px-8 ">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 mb-16">
-            <div className="lg:col-span-2">
+  <div className="flex flex-col lg:grid lg:grid-cols-5 gap-8 lg:gap-12 mb-16">
+  <div className="lg:col-span-2">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-20 h-20">
                   <img

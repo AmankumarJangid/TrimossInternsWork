@@ -58,7 +58,8 @@ export default function SignupPage() {
           email: formData.email,
           password: formData.password,
         });
-        alert("Signup successful!");
+        if( response.data.success == "true")
+              alert("Signup successful!");
         navigate("/login");
       } catch (err) {
         alert(err.response?.data?.message || "Signup failed!");

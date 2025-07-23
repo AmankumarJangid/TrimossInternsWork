@@ -6,3 +6,8 @@ Get your JWT SECRET and MongoDB database link and make .env file ( .env-example 
 
 ## Express Version - 4.18.2 and path-to-regexp Version - 6.2.1 
 is being used because the latest version is currently experimental may give some error while using path-to-regexp
+
+## to run the program Use to terminal
+Use cd client and then npm run dev 
+Use cd server and then npm run dev 
+

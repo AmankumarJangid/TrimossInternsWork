@@ -6,7 +6,7 @@ const slugRegex = /^[a-z0-9-]+$/;
 const skuRegex = /^[A-Z0-9-]+$/;
 const hexRegex = /^#[0-9A-F]{6}$/i;
 
-// Validation for creating a new product
+// Validation for creating a new producta
 export const validateCreateProduct = [
   // Basic fields
   body('name')

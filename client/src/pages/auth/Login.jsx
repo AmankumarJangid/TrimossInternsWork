@@ -3,7 +3,7 @@ import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch  } from "react-redux";
-import { setCredentials } from "../redux/slices/authSlice";
+import { setCredentials } from "../../redux/slices/authSlice";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
-                  onClick={() => alert("Forgot password functionality would go here")}
+                  onClick={() => { navigate("/forgot-password")}}
                 >
                   Forgot Password?
                 </button>

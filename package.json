@@ -25,9 +25,5 @@
     "client": "npm --prefix client run dev",
     "server": "nodemon server/src/server.js",
     "start": "node server/src/server.js"
-  },
-  "dependencies": {
-    "@paypal/checkout-server-sdk": "^1.0.3",
-    "axios": "^1.10.0"
   }
 }

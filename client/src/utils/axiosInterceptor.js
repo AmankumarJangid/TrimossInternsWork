@@ -1,5 +1,5 @@
 import axios from "axios";
-import store from "../redux/store" // your Redux store
+import {store} from "../redux/store" // your Redux store
 import { setCredentials , logout} from "../redux/slices/authSlice";
 import { refreshAccessToken , isTokenExpired } from "./tokenUtils";
 

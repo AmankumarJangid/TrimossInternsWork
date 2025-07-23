@@ -67,7 +67,7 @@ console.log("CORS ALLOWED ORIGIN =", process.env.CLIENT_URL);
 // }));
 
 app.use(cors({
-  origin: [ process.env.CLIENT_URL ],
+  origin: [ process.env.CLIENT_URL , 'http://127.0.0.1:3001'],
   credentials: true
 }));
 
