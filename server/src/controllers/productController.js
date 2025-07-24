@@ -92,26 +92,9 @@ export const getProduct = async (req, res) => {
 
 // Create new product
 
+ // extract images from the uploaded urls 
+// Utility to pull images from req.files exactly like creation
 
-// const buildImages = async (files) => {
-//   const primary = files.primary?.[0]
-//     ? await uploadToCloudinary(files.primary[0])
-//     : undefined;
-
-//   const gallery = files.gallery
-//     ? await Promise.all(files.gallery.map(uploadToCloudinary))
-//     : [];
-
-//   const technical = files.technical
-//     ? await Promise.all(files.technical.map(uploadToCloudinary))
-//     : [];
-
-//   const roomScenes = files.roomScenes
-//     ? await Promise.all(files.roomScenes.map(uploadToCloudinary))
-//     : [];
-
-//   return { primary, gallery, technical, roomScenes };
-// };
 
 export const createProduct = async (req, res) => {
   try {
@@ -121,9 +104,8 @@ export const createProduct = async (req, res) => {
     const files = req.files;
     
     console.log( req.files);
-
-
-    // extract images from the uploaded urls 
+    
+    
     const extractImages = (field) => {
       if (!files[field]) return field === 'primary' ? null : [];
       return field === 'primary'
@@ -158,6 +140,16 @@ export const createProduct = async (req, res) => {
 };
 
 // Update product (handles image replacement and attribute updates)
+
+const extractImages = (files, field) => {
+  if (!files[field]) return field === 'primary' ? null : [];
+  return files[field].map((f, idx) =>
+    field === 'primary' && idx === 0
+      ? { url: f.path, public_id: f.filename }
+      : { url: f.path, public_id: f.filename }
+  );
+};
+
 export const updateProduct = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -177,34 +169,45 @@ export const updateProduct = async (req, res) => {
     }
 
     // Handle image replacement: delete old only if new provided
-    const files = req.files;
+    const files = req.files || {};
     const replaceField = async (field) => {
-      if (files[field]) {
+
+      if( !files[field]) return;
+        //delete old 
         const old = product.images[field];
         if (Array.isArray(old)) await Promise.all(old.map(o => o.public_id && cloudinary.v2.uploader.destroy(o.public_id)));
+
         else if (old?.public_id) await cloudinary.v2.uploader.destroy(old.public_id);
-        product.images[field] = files[field].length === 1
-          ? { url: files[field][0].path, public_id: files[field][0].filename }
-          : files[field].map(f => ({ url: f.path, public_id: f.filename }));
-      }
+
+        // set new 
+        product.images[field] = extractImages(files, field);
+        
+        // product.images[field] = files[field].length === 1
+        //   ? { url: files[field][0].path, public_id: files[field][0].filename }
+        //   : files[field].map(f => ({ url: f.path, public_id: f.filename }));
     };
 
 
     for (const f of ['primary', 'gallery', 'technical', 'roomScenes']) await replaceField(f);
 
-    // Merge other fields
+    // Merge all fields except ( dynamic Attributes and images)
     Object.keys(req.body).forEach(key => {
-      if (!['dynamicAttributes'].includes(key)) product[key] = req.body[key];
+      if (!['dynamicAttributes', 'images'].includes(key)) product[key] = req.body[key];
     });
 
     await product.save();
     res.status(200).json({ success: true, message: 'Product updated successfully', data: product });
-  } catch (error) {
+  }catch (error) {
+    // Handle duplicate-key errors uniformly
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
-      return res.status(400).json({ success: false, message: `${field} already exists` });
+      return res
+        .status(400)
+        .json({ success: false, message: `${field} already exists` });
     }
-    res.status(500).json({ success: false, message: 'Error updating product', error: error.message });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Error updating product', error: error.message });
   }
 };
 
@@ -228,22 +231,53 @@ export const deleteProduct = async (req, res) => {
 // Permanent delete (remove from DB and Cloudinary)
 export const permanentDeleteProduct = async (req, res) => {
   try {
+    // 1) Validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Validation failed', errors: errors.array() });
+    }
+
+    // 2) Find the product
     const { id } = req.params;
     const product = await Product.findById(id);
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Product not found' });
+    }
 
-    const ids = [];
-    ['primary','gallery','technical','roomScenes'].forEach(field => {
+    // 3) Collect all Cloudinary public_ids
+    const publicIds = [];
+    for (const field of ['primary', 'gallery', 'technical', 'roomScenes']) {
       const data = product.images[field];
-      if (Array.isArray(data)) data.forEach(d => d.public_id && ids.push(d.public_id));
-      else if (data?.public_id) ids.push(data.public_id);
-    });
-    if (ids.length) await cloudinary.v2.api.delete_resources(ids);
+      if (Array.isArray(data)) {
+        data.forEach((d) => d.public_id && publicIds.push(d.public_id));
+      } else if (data?.public_id) {
+        publicIds.push(data.public_id);
+      }
+    }
 
+    // 4) Delete from Cloudinary
+    if (publicIds.length) {
+      await cloudinary.v2.api.delete_resources(publicIds);
+    }
+
+    // 5) Delete the Mongo document
     await product.deleteOne();
-    res.status(200).json({ success: true, message: 'Product permanently deleted' });
+
+    return res
+      .status(200)
+      .json({ success: true, message: 'Product permanently deleted' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error permanently deleting product', error: error.message });
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Error permanently deleting product',
+        error: error.message
+      });
   }
 };
 
