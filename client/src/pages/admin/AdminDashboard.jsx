@@ -1,23 +1,32 @@
 // pages/admin/AdminDashboard.jsx
-import { Outlet, NavLink } from 'react-router-dom';
+import React from 'react';
 
-export default function AdminDashboard() {
+const AdminDashboard = () => {
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 text-white p-4">
-        <h2 className="text-xl font-bold mb-4">Admin Panel</h2>
-        <nav className="flex flex-col gap-2">
-          <NavLink to="/admin" end className={({ isActive }) => isActive ? 'font-bold text-blue-300' : ''}>Dashboard</NavLink>
-          <NavLink to="/admin/add-product" className={({ isActive }) => isActive ? 'font-bold text-blue-300' : ''}>Add Product</NavLink>
-          <NavLink to="/admin/orders" className={({ isActive }) => isActive ? 'font-bold text-blue-300' : ''}>Orders</NavLink>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-6 bg-gray-100">
-        <Outlet />
-      </main>
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Example Stat Card */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-700">Total Sales</h3>
+          <p className="text-3xl font-bold mt-2">$0</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-700">Total Orders</h3>
+          <p className="text-3xl font-bold mt-2">0</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-700">New Customers</h3>
+          <p className="text-3xl font-bold mt-2">0</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-700">Products</h3>
+          <p className="text-3xl font-bold mt-2">0</p>
+        </div>
+      </div>
+      {/* You can add more sections like recent orders, charts, etc. here */}
     </div>
   );
-}
+};
+
+export default AdminDashboard;

@@ -19,6 +19,12 @@ import AdminLayout from './layout/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ResetPassword from './pages/auth/ResetPassword'
 import VerifyOtp from './pages/auth/VerifyOtp'
+import AddProduct from './pages/admin/AddProduct'
+import TestForm from './components/testForm'
+
+import ProductForm from './components/admin/productFom2'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 
 function App () {
   useAuthCheck()
@@ -27,6 +33,7 @@ function App () {
     <Router>
       <Navbar />
       <Routes>
+        <Route path='/form' element={<LocalizationProvider dateAdapter={AdapterDayjs}><ProductForm/></LocalizationProvider>}/>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
@@ -39,12 +46,13 @@ function App () {
         <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route path='/verify-otp' element={<VerifyOtp/>}/>
         <Route path='/reset-password' element={<ResetPassword/>}/>
+        <Route path='/test-form' element={<TestForm/>}/>
 
         
 
         {/* Admin Pages */}
-        <Route path="/admin" element={<PrivateAdminRoute> <AdminDashboard /> </PrivateAdminRoute>}>
-          {/* <Route path='add-product' element={ <AddProduct /> } /> */}
+        <Route path="/admin" element={<PrivateAdminRoute> <AdminLayout/> </PrivateAdminRoute>}>
+          <Route path='add-product' element={ <AddProduct /> } />
         </Route>
         
         {/*Catch all route for not found page*/ }
