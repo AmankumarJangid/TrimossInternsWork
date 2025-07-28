@@ -1,12 +1,13 @@
 import { useState } from "react";
 import BusinessGeneralInfo from "../BusinessUser/BusinessGeneralInfo";
-import AddressInfoStep from "../BusinessUser/AddressInfo";
+import AddressInfoStep from "../BusinessUser/BusinessInfo";
 import AuthorizedPersonStep from "../BusinessUser/AuthorizedPersonStep";
 import RegisteredBusinessAddressStep from "../BusinessUser/RegisteredBusinessAddressStep";
 import product1 from "../../assets/Images/product1.jpg";
 import product2 from "../../assets/Images/product2.jpg";
 import logo from "../../assets/Images/logo.png";
-
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const steps = [
   "General Info",
   "Address",
@@ -16,9 +17,11 @@ const steps = [
 
 const bgImages = [product1, product2];
 
-export default function BusinessUserForm() {
+export default function BusinessUserForm({userType}) {
+  const navigate = useNavigate();
   const [stepIndex, setStepIndex] = useState(0);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({"Business Type": userType});
+  console.log(formData, "formData in BusinessUserForm");
   const [bgIndex, setBgIndex] = useState(0);
 
   const handleNext = () => {
@@ -97,8 +100,12 @@ export default function BusinessUserForm() {
         <div
           className="w-[670px] h-[570px] p-8 rounded-[30px] text-white bg-cover bg-center transition-all duration-700"
           style={{ backgroundImage: `url(${bgImages[bgIndex]})` }}
-        >
+        >  
+<div className="absolute cursor-pointer " onClick={() => navigate(-1)}>
+            <ArrowLeft className="font-extrabold" />
+          </div>
           <div className=" bg-opacity-50 p-8 rounded-xl h-full overflow-auto">
+                
             {renderStep()}
             <div className="flex justify-between mt-6">
               {stepIndex > 0 ? (

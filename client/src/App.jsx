@@ -47,7 +47,7 @@ function App() {
         <Route path="/dynamic" element={<DynamicFormPage />} />
         <Route path="/business" element={<BusinessUserForm />} />
         <Route path="/usertype" element={<UserTypeSelector/>}/>
-        {/* Admin Pages */}
+
         <Route
           path="/admin"
           element={
@@ -59,7 +59,6 @@ function App() {
         >
           {/* <Route path='add-product' element={ <AddProduct /> } /> */}
         </Route>
-        {/*Catch all route for not found page*/}
         <Route path="*" element={<NotFound />} />
       </Routes>
 

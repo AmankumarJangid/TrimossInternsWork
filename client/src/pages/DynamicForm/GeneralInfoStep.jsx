@@ -7,7 +7,8 @@ export default function GeneralInfoStep({ formData, updateFormData }) {
     <div className="grid grid-cols-2 gap-9">
       <div className="col-span-1">
         <SelectField
-          options={["Individual Customer", "Business Customer"]}
+        disabled={true}
+          options={["Individual", "Business Customer"]}
           value={formData["User Type"] || ""}
           onChange={(e) => updateFormData({ "User Type": e.target.value })}
         />
@@ -22,6 +23,7 @@ export default function GeneralInfoStep({ formData, updateFormData }) {
       </div>
 
       <SelectField
+      placeholder={"Country"}
         options={["India", "USA", "UK"]}
         value={formData["Country"] || ""}
         onChange={(e) => updateFormData({ Country: e.target.value })}
@@ -34,6 +36,7 @@ export default function GeneralInfoStep({ formData, updateFormData }) {
       />
 
       <SelectField
+      placeholder={"Preferred Currency"}
         options={["INR", "USD", "GBP"]}
         value={formData["Preferred Currency"] || ""}
         onChange={(e) => updateFormData({ "Preferred Currency": e.target.value })}
@@ -45,7 +48,7 @@ export default function GeneralInfoStep({ formData, updateFormData }) {
         onChange={(e) => updateFormData({ Language: e.target.value })}
       />
 
-      <div className="col-span-2">
+      <div className="col-span-2 w-7/12">
         <InputField
           placeholder="Referral Code (if any)"
           value={formData["Referral Code"] || ""}

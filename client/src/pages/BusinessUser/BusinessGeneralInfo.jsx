@@ -3,15 +3,13 @@ import SelectField from "../../components/SelectField";
 
 export default function BusinessGeneralInfo({ formData, updateFormData }) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid relative grid-cols-2 gap-10">
+
       <div className="col-span-2">
         <SelectField
+        disabled={true}
           options={[
-            "Business",
-            "Designer",
-            "Distributor",
-            "Architect",
-            "Other"
+            "Business/Designer/Distributor/Architect/Other"
           ]}
           value={formData["Business Type"] || ""}
           onChange={(e) => updateFormData({ "Business Type": e.target.value })}
@@ -27,6 +25,7 @@ export default function BusinessGeneralInfo({ formData, updateFormData }) {
       </div>
 
       <SelectField
+      placeholder={"Country"}
         options={["India", "USA", "UK"]}
         value={formData["Country"] || ""}
         onChange={(e) => updateFormData({ Country: e.target.value })}
@@ -39,6 +38,7 @@ export default function BusinessGeneralInfo({ formData, updateFormData }) {
       />
 
       <SelectField
+      placeholder={"Preferred Currency"}
         options={["INR", "USD", "GBP"]}
         value={formData["Preferred Currency"] || ""}
         onChange={(e) => updateFormData({ "Preferred Currency": e.target.value })}

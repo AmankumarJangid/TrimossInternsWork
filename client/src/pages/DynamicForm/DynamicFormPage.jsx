@@ -4,12 +4,15 @@ import AddressInfoStep from "./AddressInforStep";
 import product1 from "../../assets/Images/product1.jpg";
 import product2 from "../../assets/Images/product2.jpg";
 import logo from "../../assets/Images/logo.png";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const steps = ["General Info", "Address Info"];
 const bgImages = [product1, product2];
 
-export default function DynamicFormPage() {
+export default function DynamicFormPage({ userType }) {
   const [stepIndex, setStepIndex] = useState(0);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ "User Type": userType });
+  const navigate = useNavigate();
   const [bgIndex, setBgIndex] = useState(0);
 
   const handleNext = () => {
@@ -49,7 +52,6 @@ export default function DynamicFormPage() {
 
   return (
     <div className="flex min-h-screen">
-
       <div className="w-1/3  bg-white  border-r  justify-center items-center">
         <div className="flex flex-col items-center mt-10">
           <img src={logo} alt="Logo" className="w-[400px] ml-5 " />
@@ -70,12 +72,14 @@ export default function DynamicFormPage() {
         </div>
       </div>
 
-
       <div className="w-2/3 flex mb-15 justify-center items-center p-12 relative">
         <div
           className="w-[670px] h-[570px] p-8 rounded-4xl text-white bg-cover bg-center transition-all duration-700"
           style={{ backgroundImage: `url(${bgImages[bgIndex]})` }}
         >
+          <div className="absolute cursor-pointer " onClick={() => navigate(-1)}>
+            <ArrowLeft className="font-extrabold" />
+          </div>
           <div className=" bg-opacity-50 p-8 rounded-xl h-full overflow-auto">
             {renderStep()}
             <div className="flex justify-between mt-6">
