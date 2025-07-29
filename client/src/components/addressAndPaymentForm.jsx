@@ -42,12 +42,15 @@ export default function AddressForm() {
 
   const navigate = useNavigate();
 
-  //   const role = "user";
   // eslint-disable-next-line no-unused-vars
   const { user, token } = useSelector((state) => state.auth); // added user and token access 
+  const cart = useSelector((state) => state.cart); // Assuming you have a cart slice
   const { state } = useLocation();
-  const [shippingCost, setShippingCost] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(state?.price || 0);
+  
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [selectedShipping, setSelectedShipping] = useState(null);
+  const [shippingCost, setShippingCost] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(state?.price || cart?.totalAmount || 0);
   const [orderDetails, setOrderDetails] = useState(null);
   const [showPaymentButton, setShowPaymentButton] = useState(false);
   const [dbOrderId, setDbOrderId] = useState(null);
@@ -63,7 +66,6 @@ export default function AddressForm() {
   // const user = useSelector(state => state.auth.user); // Optionally get user ID
 
   const onSubmit = async (data) => {
-    alert("submit button pressed");
     try {
       const address = data?.recipient?.address;
       if (!address) {
@@ -71,15 +73,10 @@ export default function AddressForm() {
         return;
       }
 
-      // Proceed safely using `address`
-      console.log("Country:", address.countryCode);
-      console.log("State:", address.state);
-      console.log("Phone:", address.phone);
-      console.log("StateCode " , address.stateCode);
-
-      console.log(data.recipient.address.residential);
-
-      const payload = {
+      // Reset previous options
+      setShippingOptions([]);
+      setSelectedShipping(null);
+      const fedexPayload = {
         origin: {
           streetLines: [/*data.shipper.address.street ||*/ "Ratanada Road"],
           city: /*data.shipper.address.city || */"Jodhpur",
@@ -107,24 +104,67 @@ export default function AddressForm() {
             ? "STANDARD_OVERNIGHT"
             : "FEDEX_INTERNATIONAL_PRIORITY",
       };
+      
+      const dhlPayload = {
+        origin: {
+          postalCode: "342011",
+          cityName: "Jodhpur",
+          countryCode: "IN",
+        },
+        destination: {
+          postalCode: data.recipient.address.postalCode.toUpperCase(),
+          cityName: data.recipient.address.city,
+          countryCode: data.recipient.address.countryCode.toUpperCase(),
+        },
+        packages: [{
+          weight: 0.4,
+          dimensions: { length: 10, width: 8, height: 5 }, // cm
+        }],
+      };
 
-      const res = await api.post(`/fedex/rates`, payload);
-      const totalNetCharge =
-        res.data?.data?.output?.rateReplyDetails[0]?.ratedShipmentDetails[0]
-          ?.totalNetCharge;
+      const fedexPromise = api.post(`/fedex/rates`, fedexPayload);
+      const dhlPromise = api.post(`/dhl/rates`, dhlPayload);
 
-      const shippingCostValue = parseFloat(totalNetCharge || 0);
-      setShippingCost(shippingCostValue);
+      const results = await Promise.allSettled([fedexPromise, dhlPromise]);
+      const availableOptions = [];
 
-      const newAmount = state?.price + shippingCostValue;
-      setTotalAmount(newAmount);
+      // Process FedEx results
+      if (results[0].status === 'fulfilled' && results[0].value.data?.data?.output?.rateReplyDetails) {
+        results[0].value.data.data.output.rateReplyDetails.forEach(rate => {
+          availableOptions.push({
+            provider: 'FedEx',
+            serviceName: rate.serviceName,
+            cost: rate.ratedShipmentDetails[0].totalNetCharge,
+            currency: rate.ratedShipmentDetails[0].currency,
+          });
+        });
+      } else if (results[0].status === 'rejected') {
+        console.error("FedEx API Error:", results[0].reason?.response?.data || results[0].reason.message);
+      }
+
+      // Process DHL results
+      if (results[1].status === 'fulfilled' && results[1].value.data?.data?.products) {
+        results[1].value.data.data.products.forEach(product => {
+          if (product.totalPrice[0]) {
+            availableOptions.push({
+              provider: 'DHL',
+              serviceName: product.productName,
+              cost: product.totalPrice[0].price,
+              currency: product.totalPrice[0].priceCurrency,
+            });
+          }
+        });
+      } else if (results[1].status === 'rejected') {
+        console.error("DHL API Error:", results[1].reason?.response?.data || results[1].reason.message);
+      }
+
+      setShippingOptions(availableOptions);
       setOrderDetails(data);
-      setShowPaymentButton(true);
-      setPaymentMethod(data.paymentMethod);
+      setShowPaymentButton(false); // Hide payment buttons until a shipping option is selected
+
     } catch (err) {
       console.error(err);
-      console.error(err.response.data.message);
-      alert( err.response.data.message);
+      alert("Could not fetch shipping rates. Please check the address and try again.");
     }
   };
 
@@ -184,6 +224,16 @@ export default function AddressForm() {
     } catch (error) {
       console.error("Error capturing PayPal payment:", error);
     }
+  };
+
+  const handleShippingSelect = (option) => {
+    setSelectedShipping(option);
+    const shippingCostValue = parseFloat(option.cost || 0);
+    setShippingCost(shippingCostValue);
+    const basePrice = state?.price || cart?.totalAmount || 0;
+    setTotalAmount(basePrice + shippingCostValue);
+    setShowPaymentButton(true);
+    setPaymentMethod(watch("paymentMethod"));
   };
 
   const handleRazorpayPayment = async () => {
@@ -406,16 +456,34 @@ export default function AddressForm() {
           Submit
         </button>
 
-        {showPaymentButton && (
+        {shippingOptions.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-lg font-bold mb-2">Select a Shipping Option:</h3>
+            <div className="space-y-2">
+              {shippingOptions.map((option, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleShippingSelect(option)}
+                  className={`w-full text-left p-3 border rounded-lg transition-all ${selectedShipping === option ? 'bg-blue-100 border-blue-500 ring-2 ring-blue-300' : 'border-gray-300 hover:bg-gray-50'}`}
+                >
+                  <span className="font-semibold">{option.provider} - {option.serviceName}</span>: {option.cost.toFixed(2)} {option.currency}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showPaymentButton && selectedShipping && (
           <div className="mt-4">
-            <p>Product Price: {state?.price?.toFixed(2)} {state?.currency}</p>
+            <p>Product Price: {(state?.price || cart?.totalAmount || 0).toFixed(2)} {state?.currency}</p>
             <p>Shipping Cost: {shippingCost?.toFixed(2)} {state?.currency}</p>
             <p className="font-bold">Total Amount: {totalAmount?.toFixed(2)} {state?.currency}</p>
 
             {paymentMethod === "PayPal" && (
               <PayPalScriptProvider
                 options={{
-                  "client-id": import.meta.env.VITE_APP_PAYPAL_CLIENT_ID,
+                  "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
                   currency: state?.currency || "USD",
                   intent: "capture",
                 }}

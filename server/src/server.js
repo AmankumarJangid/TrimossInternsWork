@@ -13,6 +13,8 @@ import razorpayRoutes from './routes/razopayRoutes.js';
 import orderRoutes from "./routes/orderRoutes.js";
 import fedexRoutes from './fedexApi/routes/fedex.js';
 import errorHandler from './fedexApi/middleware/errorHandler.js';
+import dhlRoutes from './routes/dhlRoutes.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -93,6 +95,7 @@ app.use('/api/paypal', paypalRoutes);
 app.use('/api/razorpay', razorpayRoutes);
 app.use("/api/orders", orderRoutes);
 app.use('/api/fedex', fedexRoutes);
+app.use('/api/dhl', dhlRoutes);
 
 
 
