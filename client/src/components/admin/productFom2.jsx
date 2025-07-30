@@ -70,13 +70,28 @@ export default function ProductForm ({ initialData, onSuccess }) {
   //     useEffect(()=>{
   //     if( initalData ) reset(initalData);
   // }, [initialData, reset]);
+  const handleFileChange =( e, type) =>{
+    const files = Array.from(e.target.files);
+    cons
+  }
 
   const onSubmit = data => {
+    const payload = {
+      ...data,
+      primary : "files",
+      gallery : ["File1" , "File2" , "File3"]
+    }
+    console.log(payload)
   }
 
   return (
     <div className=' shadow-black space-y-12 p-10 bg-slate-50'>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className='space-y-12 container justify-self-center'
+      >
         {/* Title SKU Short and Detailed description */}
+        <div className='grid md:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           <div className=' relative h-10'>
             <label for='name'>Title</label>
             <br />
@@ -112,6 +127,7 @@ export default function ProductForm ({ initialData, onSuccess }) {
             <br />
             <textarea
               name='description.short'
+              {...register('description.short', { maxLength: 200 })}
               watch
               type='text'
               className='min-w-full mt-2 px-2 min-h-30 border rounded-md border-amber-950'
@@ -132,6 +148,9 @@ export default function ProductForm ({ initialData, onSuccess }) {
         </div>
 
         {/*Dimensions fields */}
+        <div className='grid md:grid-cols-4 grid-col-11 gap-10 text-sm lg:text-md bg-white p-5 pb-20 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <label className='col-span-full'>Dimension</label>
+
           {['length', 'width', 'thickness'].map(d => (
             <div className='h-10'>
               <label for={`dimensions.${d}`}>{d}</label>
@@ -162,12 +181,40 @@ export default function ProductForm ({ initialData, onSuccess }) {
           </div>
         </div>
 
+        <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <div className='grid lg:grid-cols-4  grid-cols-1'>
+            <label className='lg:col-span-full '>Categories</label>
+            {categoryFields.map((item, index) => (
+              <div
+                key={item.id}
+                className='flex items-center text-sm gap-2 mr-10 my-2'
+              >
+                <input
+                  {...register(`categories.${index}`)}
+                  className='border px-2 py-1 lg:w-4/5 w-9/10 rounded'
+                />
+                <button
+                  type='button'
+                  className=''
+                  onClick={() => removeCategory(index)}
+                >
+                  ❌
+                </button>
+              </div>
+            ))}
+            <button type='button' className="text-left" onClick={() => appendCategory('')}>
+              <Add /> Categories
+            </button>
+          </div>
         </div>
 
+        <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <div>
             <label className='col-span-full'>Color Variants</label>
             {colorFields.map((item, index) => (
               <div
                 key={item.id}
+                className='flex items-center gap-4 my-4 lg:w-1/2 w-fullitems-center'
               >
                 <input
                   placeholder='Color'
@@ -186,20 +233,92 @@ export default function ProductForm ({ initialData, onSuccess }) {
               </div>
             ))}
             <div>
+              <button
                 type='button'
                 onClick={() => appendColor({ color: '', hex: '' })}
+              >
+                <Add />
                 Color
+              </button>
             </div>
           </div>
         </div>
 
         {/* {dynamicAttributes} */}
+        <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <label className='col-span-full'>Dynamic Attributes</label>
+          {attributeFields.map((field, index) => (
+            <div
+              key={field.id}
+              className='flex flex-col lg:flex-row gap-2 lg:w-1/2 w-full  rounded-md'
+            >
+              <input
+                placeholder='Attribute Name'
+                {...register(`dynamicAttributes.${index}.name`)}
+                className='border px-2 py-1 rounded'
+              />
+              <select
+                {...register(`dynamicAttributes.${index}.dataType`)}
+                className='border px-2 py-1 rounded'
+              >
+                <option value='string'>String</option>
+                <option value='number'>Number</option>
+                <option value='boolean'>Boolean</option>
+                <option value='date'>Date</option>
+              </select>
 
+              {/* Dynamically render input by watching dataType */}
+              <DynamicAttributeInput
+                dataType={watch(`dynamicAttributes.${index}.dataType`)}
+                value={watch(`dynamicAttributes.${index}.value`)}
+                onChange={val =>
+                  setValue(`dynamicAttributes.${index}.value`, val)
+                }
+              />
 
+              <button
+                type='button'
+                onClick={() => removeAttribute(index)}
+                className='text-red-500 text-sm underline w-fit'
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type='button'
+            onClick={() =>
+              appendAttribute({ name: '', dataType: 'string', value: '' })
+            }
+            className='px-2 py-1 bg-blue-500 text-white rounded w-fit'
+          >
+            <Add /> Add Attribute
+          </button>
         </div>
 
+        <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          {['primary', 'gallery' , 'technical', 'roomScences'].map((type)=>(
+            <div key={type}>
+              <label htmlFor={type}>
+                <CloudUpload/> {type}
+              </label><br/>  
+                <input 
+                  type="file" id={type} 
+                  hidden
+                  multiple={type !== 'primary'}
+                  onChange={(e)=> handleFileChange}
+                />
+             
+            
+            </div>
+          ))
 
+          }
+        </div>
 
+        <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div>
+
+        <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div>
 
         <div className='relative min-w-full border text-right'>
           <button
