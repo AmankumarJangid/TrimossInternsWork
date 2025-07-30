@@ -72,11 +72,6 @@ export default function ProductForm ({ initialData, onSuccess }) {
   // }, [initialData, reset]);
   const handleFileChange =( e, type) =>{
     const files = Array.from(e.target.files);
-    cons
-  }
-  const handleFileChange =( e, type) =>{
-    const files = Array.from(e.target.files);
-    cons
   }
 
   const onSubmit = data => {
