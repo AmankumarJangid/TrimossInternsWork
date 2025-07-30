@@ -12,14 +12,6 @@ import AddressForm from "./components/addressAndPaymentForm";
 import OrderConfirmed from "./pages/OrderConfirmed";
 // import { PAYPAL_CLIENT_ID } from "../config";
 // import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-<<<<<<< HEAD
-import useAuthCheck from "./utils/useAuthCheck";
-import PrivateAdminRoute from "./routes/privateAdminRoutes";
-import NotFound from "./pages/pageNotFound404";
-import AdminLayout from "./layout/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import ResetPassword from "./pages/auth/ResetPassword";
-import VerifyOtp from "./pages/auth/VerifyOtp";
 
 import MosaicCollectionPage from "./pages/ProductListing/ProductList";
 import DynamicFormPage from "./pages/DynamicForm/DynamicFormPage";
