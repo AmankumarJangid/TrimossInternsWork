@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import product1 from "../../assets/Images/product1.jpg";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function SignupPage() {
@@ -33,8 +33,7 @@ export default function SignupPage() {
   };
 
   const validateForm = () => {
-
-    console.log( formData.confirmPassword);
+    console.log(formData.confirmPassword);
     const newErrors = {};
     if (!formData.username.trim()) newErrors.username = "Username is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
@@ -47,10 +46,10 @@ export default function SignupPage() {
   };
 
   const handleSubmit = async (e) => {
-    console.log( "button is pressed");
+    console.log("button is pressed");
     e.preventDefault();
     const newErrors = validateForm();
-    console.log( newErrors);
+    console.log(newErrors);
     if (Object.keys(newErrors).length === 0) {
       try {
         const response = await axios.post(`${API_BASE}/users/register`, {
@@ -58,8 +57,7 @@ export default function SignupPage() {
           email: formData.email,
           password: formData.password,
         });
-        if( response.data.success == "true")
-              alert("Signup successful!");
+        if (response.data.success == "true") alert("Signup successful!");
         navigate("/login");
       } catch (err) {
         alert(err.response?.data?.message || "Signup failed!");
@@ -78,17 +76,20 @@ export default function SignupPage() {
           </h1>
         </div>
 
-        <div className="w-full lg:w-[454px] mr-4 xl:w-[30rem] mt-4 sm:mt-6 mb-6 sm:mb-8 mx-auto rounded-2xl bg-white flex items-center justify-center p-4 sm:p-6 lg:p-10">
+        <div
+          className="w-full lg:w-[454px] mr-4 xl:w-[30rem] mt-4 sm:mt-6 mb-6 sm:mb-8 mx-auto rounded-2xl flex items-center justify-center p-4 sm:p-6 lg:p-10"
+          style={{
+            backgroundImage: `url(${product1})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: "rgba(255,255,255,0.9)",
+            backdropFilter: "blur(2px)",
+          }}
+        >
           <div className="w-full max-w-sm">
-            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 lg:mb-8">
-              Sign up
-            </h2>
-
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="h-5 w-5 text-gray-400" />
@@ -98,16 +99,13 @@ export default function SignupPage() {
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    placeholder="Enter your full name"
+                    placeholder="Full name"
                     className="w-full pl-10 pr-3 py-3 bg-gray-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all duration-200"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg
@@ -129,7 +127,7 @@ export default function SignupPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Enter your email"
+                    placeholder="Email Address"
                     className="w-full pl-10 pr-3 py-3 bg-gray-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all duration-200"
                   />
                 </div>
@@ -137,9 +135,6 @@ export default function SignupPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Lock className="h-5 w-5 text-gray-400" />
@@ -172,9 +167,6 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Lock className="h-5 w-5 text-gray-400" />
@@ -184,7 +176,7 @@ export default function SignupPage() {
                       name="confirmPassword"
                       placeholder="Confirm"
                       value={formData.confirmPassword}
-                      onChange = {handleInputChange}
+                      onChange={handleInputChange}
                       className="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all duration-200"
                     />
                     <button
