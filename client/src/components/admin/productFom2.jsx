@@ -9,6 +9,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { TextField } from '@mui/material'
 import { zodResolver } from '@hookform/resolvers/zod'
 import DynamicAttributeInput from "./DynamicAttributeInput"
+import DynamicAttributeInput from './DynamicAttributeInput'
 
 export default function ProductForm ({ initialData, onSuccess }) {
   const token = useSelector(state => state.auth.token)
