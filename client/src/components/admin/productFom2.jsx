@@ -78,9 +78,12 @@ export default function ProductForm ({ initialData, onSuccess }) {
   const onSubmit = data => {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     alert('Form is submitted ')
     console.log(data)
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     const payload = {
@@ -90,6 +93,9 @@ export default function ProductForm ({ initialData, onSuccess }) {
     }
     console.log(payload)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -99,9 +105,18 @@ export default function ProductForm ({ initialData, onSuccess }) {
     <div className=' shadow-black space-y-12 p-10 bg-slate-50'>
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-12 container justify-self-center'>
         {/* Title SKU Short and Detailed description */}
         <div className='grid md:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-xl bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+=======
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className='space-y-12 container justify-self-center'
+      >
+        {/* Title SKU Short and Detailed description */}
+        <div className='grid md:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+>>>>>>> Stashed changes
 =======
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -155,7 +170,11 @@ export default function ProductForm ({ initialData, onSuccess }) {
               name='description.short'
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               {...register('description.short' , {maxLength : 200})}
+=======
+              {...register('description.short', { maxLength: 200 })}
+>>>>>>> Stashed changes
 =======
               {...register('description.short', { maxLength: 200 })}
 >>>>>>> Stashed changes
@@ -184,9 +203,15 @@ export default function ProductForm ({ initialData, onSuccess }) {
         {/*Dimensions fields */}
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <div className='grid md:grid-cols-4 grid-col-11 gap-10 text-sm lg:text-xl bg-white p-5 pb-20 rounded-2xl drop-shadow-2xl shadow-blue-950'>
             <label className='col-span-full'>Dimension</label>
             
+=======
+        <div className='grid md:grid-cols-4 grid-col-11 gap-10 text-sm lg:text-md bg-white p-5 pb-20 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <label className='col-span-full'>Dimension</label>
+
+>>>>>>> Stashed changes
 =======
         <div className='grid md:grid-cols-4 grid-col-11 gap-10 text-sm lg:text-md bg-white p-5 pb-20 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           <label className='col-span-full'>Dimension</label>
@@ -227,6 +252,7 @@ export default function ProductForm ({ initialData, onSuccess }) {
           </div>
         </div>
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
         <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-xl bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
@@ -313,13 +339,48 @@ export default function ProductForm ({ initialData, onSuccess }) {
         <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           <div>
 >>>>>>> Stashed changes
+=======
+        <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <div className='grid lg:grid-cols-4  grid-cols-1'>
+            <label className='lg:col-span-full '>Categories</label>
+            {categoryFields.map((item, index) => (
+              <div
+                key={item.id}
+                className='flex items-center text-sm gap-2 mr-10 my-2'
+              >
+                <input
+                  {...register(`categories.${index}`)}
+                  className='border px-2 py-1 lg:w-4/5 w-9/10 rounded'
+                />
+                <button
+                  type='button'
+                  className=''
+                  onClick={() => removeCategory(index)}
+                >
+                  ❌
+                </button>
+              </div>
+            ))}
+            <button type='button' className="text-left" onClick={() => appendCategory('')}>
+              <Add /> Categories
+            </button>
+          </div>
+        </div>
+
+        <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <div>
+>>>>>>> Stashed changes
             <label className='col-span-full'>Color Variants</label>
             {colorFields.map((item, index) => (
               <div
                 key={item.id}
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 className='flex items-center gap-4 my-4 items-center'
+=======
+                className='flex items-center gap-4 my-4 lg:w-1/2 w-fullitems-center'
+>>>>>>> Stashed changes
 =======
                 className='flex items-center gap-4 my-4 lg:w-1/2 w-fullitems-center'
 >>>>>>> Stashed changes
@@ -344,6 +405,7 @@ export default function ProductForm ({ initialData, onSuccess }) {
               </div>
             ))}
             <div>
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
                 <button
@@ -371,11 +433,21 @@ export default function ProductForm ({ initialData, onSuccess }) {
                 Color
               </button>
 >>>>>>> Stashed changes
+=======
+              <button
+                type='button'
+                onClick={() => appendColor({ color: '', hex: '' })}
+              >
+                <Add />
+                Color
+              </button>
+>>>>>>> Stashed changes
             </div>
           </div>
         </div>
 
         {/* {dynamicAttributes} */}
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
         <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-xl bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
@@ -429,6 +501,82 @@ export default function ProductForm ({ initialData, onSuccess }) {
         <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-xl bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div>
 
         <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-xl bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div>
+=======
+        <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          <label className='col-span-full'>Dynamic Attributes</label>
+          {attributeFields.map((field, index) => (
+            <div
+              key={field.id}
+              className='flex flex-col lg:flex-row gap-2 lg:w-1/2 w-full  rounded-md'
+            >
+              <input
+                placeholder='Attribute Name'
+                {...register(`dynamicAttributes.${index}.name`)}
+                className='border px-2 py-1 rounded'
+              />
+              <select
+                {...register(`dynamicAttributes.${index}.dataType`)}
+                className='border px-2 py-1 rounded'
+              >
+                <option value='string'>String</option>
+                <option value='number'>Number</option>
+                <option value='boolean'>Boolean</option>
+                <option value='date'>Date</option>
+              </select>
+
+              {/* Dynamically render input by watching dataType */}
+              <DynamicAttributeInput
+                dataType={watch(`dynamicAttributes.${index}.dataType`)}
+                value={watch(`dynamicAttributes.${index}.value`)}
+                onChange={val =>
+                  setValue(`dynamicAttributes.${index}.value`, val)
+                }
+              />
+
+              <button
+                type='button'
+                onClick={() => removeAttribute(index)}
+                className='text-red-500 text-sm underline w-fit'
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type='button'
+            onClick={() =>
+              appendAttribute({ name: '', dataType: 'string', value: '' })
+            }
+            className='px-2 py-1 bg-blue-500 text-white rounded w-fit'
+          >
+            <Add /> Add Attribute
+          </button>
+        </div>
+
+        <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'>
+          {['primary', 'gallery' , 'technical', 'roomScences'].map((type)=>(
+            <div key={type}>
+              <label htmlFor={type}>
+                <CloudUpload/> {type}
+              </label><br/>  
+                <input 
+                  type="file" id={type} 
+                  hidden
+                  multiple={type !== 'primary'}
+                  onChange={(e)=> handleFileChange}
+                />
+             
+            
+            </div>
+          ))
+
+          }
+        </div>
+
+        <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div>
+
+        <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div>
+>>>>>>> Stashed changes
 =======
         <div className='grid lg:grid-cols-1 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           <label className='col-span-full'>Dynamic Attributes</label>
