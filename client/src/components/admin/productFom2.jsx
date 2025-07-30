@@ -76,6 +76,7 @@ export default function ProductForm ({ initialData, onSuccess }) {
   }
 
   const onSubmit = data => {
+<<<<<<< Updated upstream
     alert('Form is submitted ')
     console.log(data)
 =======
@@ -90,6 +91,7 @@ export default function ProductForm ({ initialData, onSuccess }) {
 
   return (
     <div className=' shadow-black space-y-12 p-10 bg-slate-50'>
+<<<<<<< Updated upstream
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-12 container justify-self-center'>
         {/* Title SKU Short and Detailed description */}
         <div className='grid md:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-xl bg-white p-5 rounded-2xl drop-shadow-2xl shadow-blue-950'>
@@ -136,6 +138,7 @@ export default function ProductForm ({ initialData, onSuccess }) {
             <br />
             <textarea
               name='description.short'
+<<<<<<< Updated upstream
               {...register('description.short' , {maxLength : 200})}
 =======
               {...register('description.short', { maxLength: 200 })}
