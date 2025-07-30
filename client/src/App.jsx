@@ -20,11 +20,11 @@ import AdminLayout from "./layout/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ResetPassword from "./pages/auth/ResetPassword";
 import VerifyOtp from "./pages/auth/VerifyOtp";
+
 import MosaicCollectionPage from "./pages/ProductListing/ProductList";
 import DynamicFormPage from "./pages/DynamicForm/DynamicFormPage";
 import BusinessUserForm from "./pages/BusinessUser/BusinessUserForm";
 import UserTypeSelector from "./pages/UserTypeSelector";
-=======
 import useAuthCheck from './utils/useAuthCheck'
 import PrivateAdminRoute from './routes/privateAdminRoutes'
 import NotFound from './pages/pageNotFound404'
@@ -38,7 +38,6 @@ import TestForm from './components/testForm'
 import ProductForm from './components/admin/productFom2'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
->>>>>>> 740a023d33a73964b8bab18c77a7aaf3e9afc362
 
 function App() {
   useAuthCheck();
