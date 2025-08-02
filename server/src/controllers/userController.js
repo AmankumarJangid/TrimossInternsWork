@@ -9,12 +9,12 @@ import bcrypt from 'bcrypt'
 export const registerUser = async (req, res) => {
   try {
     console.log("REQ.BODY =", req.body);
-    const { 
-      name, 
-      email, 
-      password, 
-      address = [], role , 
-      userType = 'individual',  
+    const {
+      name,
+      email,
+      password,
+      address = [], role,
+      userType = 'individual',
       ...rest
 
     } = req.body;
@@ -27,8 +27,11 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
+
     // Check if user already exists
-    const existingUser = await User.findByEmail(email);
+    const existingUser = await User.findByEmail(normalizedEmail);
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -37,22 +40,21 @@ export const registerUser = async (req, res) => {
     }
 
     // Handle address normalization ( add label if missing)
-    const normalizedAddresses = address.map((addr, idx ) =>({
+    const normalizedAddresses = address.map((addr, idx) => ({
       ...addr,
-      label : addr.label || `${addr.city}${addr.zipCode ?`-${addr.zipCode}` : ''}`,
-      isDefault : idx === 0 ? true : !!addr.isDefault
+      label: addr.label || `${addr.city}${addr.zipCode ? `-${addr.zipCode}` : ''}`,
+      isDefault: idx === 0 ? true : !!addr.isDefault
     }));
 
     // Create new user
-    const user = new User({ 
-      name, 
-      email, 
-      password, 
-      address, 
+    const user = new User({
+      name,
+      email,
+      password,
       role,
       userType,
-      address : normalizedAddresses,
-       ...rest
+      address: normalizedAddresses,
+      ...rest
     });
     await user.save();
 
@@ -100,9 +102,9 @@ export const loginUser = async (req, res) => {
 
     // Find user and include password
     const normalizedEmail = email.trim().toLowerCase();
-    const user = await User.findByEmail(email).select('+password');
-    
-    console.log( "found user" , user);
+    const user = await User.findByEmail(normalizedEmail).select('+password');
+
+    console.log("found user", user);
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
@@ -278,11 +280,18 @@ export const updateUserProfile = async (req, res) => {
 
     // Normalize address if provided
     if (req.body.address) {
-      const normalizedAddresses = req.body.address.map((addr, idx) => ({
+      let normalizedAddresses = req.body.address.map(addr => ({
         ...addr,
         label: addr.label || `${addr.city}${addr.zipCode ? ` - ${addr.zipCode}` : ''}`,
-        isDefault: idx === 0 ? true : !!addr.isDefault
+        isDefault: !!addr.isDefault
       }));
+
+      // Ensure only one default
+      const hasDefault = normalizedAddresses.some(addr => addr.isDefault);
+      if (!hasDefault && normalizedAddresses.length > 0) {
+        normalizedAddresses[0].isDefault = true;
+      }
+
       user.address = normalizedAddresses;
     }
 
@@ -321,7 +330,7 @@ export const changePassword = async (req, res) => {
     }
 
     const user = await User.findById(req.user.id).select('+password');
-    
+
     // Verify current password
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
@@ -479,43 +488,43 @@ export const deleteUser = async (req, res) => {
 
 
 
-export const sendForgotPasswordOTP = async(req, res) =>{
-  const {email} = req.body;
-  const user = await User.findOne({email});
+export const sendForgotPasswordOTP = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
 
-  if( !user ) return res.status(404).json({message : "Enter a valid email, User not found "});
+  if (!user) return res.status(404).json({ message: "Enter a valid email, User not found " });
 
-  const otp =  otpGenerator.generate( 6 , { upperCaseAlphabets : false , specialChars : false});
-  const expiry = new Date(Date.now() + 10*60*1000);
+  const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
+  const expiry = new Date(Date.now() + 10 * 60 * 1000);
   user.otp = otp;
   user.otpExpiresAt = expiry;
 
   await user.save();
 
-  console.log( user.otp );
+  console.log(user.otp);
 
   // create the transporter
   const transporter = nodemailer.createTransport({
-  service : "gmail",
-  auth : {
-    user : process.env.MY_EMAIL,
-    pass: process.env.MY_EMAIL_PASSWORD
-  }
+    service: "gmail",
+    auth: {
+      user: process.env.MY_EMAIL,
+      pass: process.env.MY_EMAIL_PASSWORD
+    }
   })
 
   ///// send to gmail to the entered email
 
   await transporter.sendMail({
-    from : process.env.MY_EMAIL,
-    to : email,
-    subject : `Your OTP for password change is ${otp}`,
-    text : `From Trimoss India , \n
+    from: process.env.MY_EMAIL,
+    to: email,
+    subject: `Your OTP for password change is ${otp}`,
+    text: `From Trimoss India , \n
             The otp for password Change is \n
             ${otp}\n
             This otp will valid for the next 10 minutes`
   });
 
-  res.json({message : "OTP is sent successfully"});
+  res.json({ message: "OTP is sent successfully" });
 
 }
 
@@ -524,29 +533,29 @@ export const sendForgotPasswordOTP = async(req, res) =>{
 export const verifyOtp = async (req, res) => {
 
   const { email, otp } = req.body;
-  console.log( otp);
+  console.log(otp);
   const user = await User.findOne({ email }).select('+otp +otpExpiresAt');
 
   if (!user) return res.status(404).json({ message: 'User not found' });
 
-  if( (otp === user.otp) && (user.otpExpiresAt > Date.now())){
+  if ((otp === user.otp) && (user.otpExpiresAt > Date.now())) {
     return res.status(200).json({ success: true });
   }
-  
+
   // if (!user.otp || user.otp != otp || user.otpExpiresAt > Date.now()) 
   else {
     return res.status(400).json({ message: 'Invalid or expired OTP' });
   }
 
-  
+
 };
 
 
 
 
 // ✅ Reset password after otop validation
-export const resetPasswordWithOTP = async (req, res) =>{
-  const {email , otp , newPassword} = req.body;
+export const resetPasswordWithOTP = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
 
   const user = await User.findOne({ email }).select('+password');
 
@@ -554,7 +563,7 @@ export const resetPasswordWithOTP = async (req, res) =>{
     return res.status(400).json({ message: 'Invalid or expired OTP' });
   }
 
-  
+
 
   user.password = newPassword;
   user.otp = null;
@@ -563,7 +572,7 @@ export const resetPasswordWithOTP = async (req, res) =>{
 
   console.log(user.password);
 
-  res.json({message : "Password is successfully changed"});
+  res.json({ message: "Password is successfully changed" });
 
 
 }
