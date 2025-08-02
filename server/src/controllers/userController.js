@@ -9,10 +9,18 @@ import bcrypt from 'bcrypt'
 export const registerUser = async (req, res) => {
   try {
     console.log("REQ.BODY =", req.body);
-    const { name, email, password, address = [], role , userType,  ...rest} = req.body;
+    const { 
+      name, 
+      email, 
+      password, 
+      address = [], role , 
+      userType = 'individual',  
+      ...rest
+
+    } = req.body;
 
     // Validate required fields
-    if (!name || !email || !password || ) {
+    if (!name || !email || !password || !userType) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields'
@@ -28,8 +36,24 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    // Handle address normalization ( add label if missing)
+    const normalizedAddresses = address.map((addr, idx ) =>({
+      ...addr,
+      label : addr.label || `${addr.city}${addr.zipCode ?`-${addr.zipCode}` : ''}`,
+      isDefault : idx === 0 ? true : !!addr.isDefault
+    }));
+
     // Create new user
-    const user = new User({ name, email, password, address, role });
+    const user = new User({ 
+      name, 
+      email, 
+      password, 
+      address, 
+      role,
+      userType,
+      address : normalizedAddresses,
+       ...rest
+    });
     await user.save();
 
     // Generate tokens
@@ -224,7 +248,7 @@ export const getUserProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['name', 'email', 'avatar'];
+    const allowedUpdates = ['name', 'email', 'avatar', 'address'];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
@@ -234,8 +258,15 @@ export const updateUserProfile = async (req, res) => {
       });
     }
 
-    // Check if email is being updated and if it already exists
-    if (req.body.email) {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (req.body.email && req.body.email !== user.email) {
       const existingUser = await User.findByEmail(req.body.email);
       if (existingUser && existingUser._id.toString() !== req.user.id) {
         return res.status(400).json({
@@ -245,15 +276,22 @@ export const updateUserProfile = async (req, res) => {
       }
     }
 
-    if ( req.body.address){
-      user.address = req.body.address;
+    // Normalize address if provided
+    if (req.body.address) {
+      const normalizedAddresses = req.body.address.map((addr, idx) => ({
+        ...addr,
+        label: addr.label || `${addr.city}${addr.zipCode ? ` - ${addr.zipCode}` : ''}`,
+        isDefault: idx === 0 ? true : !!addr.isDefault
+      }));
+      user.address = normalizedAddresses;
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    // Apply other fields
+    updates.forEach((key) => {
+      if (key !== 'address') user[key] = req.body[key];
+    });
+
+    await user.save();
 
     res.json({
       success: true,
@@ -268,6 +306,7 @@ export const updateUserProfile = async (req, res) => {
     });
   }
 };
+
 
 // Change password
 export const changePassword = async (req, res) => {
