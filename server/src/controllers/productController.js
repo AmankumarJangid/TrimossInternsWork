@@ -98,6 +98,8 @@ export const getProduct = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
+
+    console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
 
@@ -135,7 +137,7 @@ export const createProduct = async (req, res) => {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(400).json({ success: false, message: `${field} already exists` });
     }
-    res.status(500).json({ success: false, message: 'Error creating product', error: error.message });
+    res.status(500).json({ success: false, message: `Error creating product ${error}`, error: error.message });
   }
 };
 

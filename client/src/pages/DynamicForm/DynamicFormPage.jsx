@@ -12,6 +12,7 @@ const bgImages = [product1, product2];
 export default function DynamicFormPage({ userType }) {
   const [stepIndex, setStepIndex] = useState(0);
   const [formData, setFormData] = useState({ "User Type": userType });
+  console.log(formData , "Individual User");
   const navigate = useNavigate();
   const [bgIndex, setBgIndex] = useState(0);
 

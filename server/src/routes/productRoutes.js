@@ -20,6 +20,8 @@ import {
 } from '../middleware/productValidation.js';
 import upload from '../middleware/cloudinaryUploader.js';
 
+import parseJsonFields from '../middleware/parseJsonFields.js';
+
 const router = express.Router();
 
 // Public routes
@@ -40,6 +42,7 @@ router.post(
     { name: 'technical', maxCount: 5 },
     { name: 'roomScenes', maxCount: 5 }
   ]),
+  parseJsonFields,
   validateCreateProduct,
   createProduct
 );

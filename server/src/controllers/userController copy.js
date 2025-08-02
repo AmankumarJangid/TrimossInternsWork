@@ -9,10 +9,10 @@ import bcrypt from 'bcrypt'
 export const registerUser = async (req, res) => {
   try {
     console.log("REQ.BODY =", req.body);
-    const { name, email, password, address = [], role , userType,  ...rest} = req.body;
+    const { name, email, password, address, role } = req.body;
 
     // Validate required fields
-    if (!name || !email || !password || ) {
+    if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields'
