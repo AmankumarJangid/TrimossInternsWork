@@ -11,6 +11,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import DynamicAttributeInput from './DynamicAttributeInput'
 import api from '../../utils/axiosInterceptor'
 
+
+
+
 export default function ProductForm({ initialData, onSuccess }) {
 
   const token = useSelector(state => state.auth.token)
@@ -81,6 +84,7 @@ export default function ProductForm({ initialData, onSuccess }) {
   }, [initialData, reset]);
   // File change handler
 
+
   const handleFileChange = (e, type) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles(prev => ({
@@ -100,10 +104,13 @@ export default function ProductForm({ initialData, onSuccess }) {
     if (type === 'primary') {
       const previewURL = URL.createObjectURL(selectedFiles[0]);
       setPreviews(prev => ({ ...prev, primary: previewURL }));
-    } else {
+    }
+
+    else {
       const previewURLs = selectedFiles.map(file => URL.createObjectURL(file));
       setPreviews(prev => ({ ...prev, [type]: previewURLs }));
     }
+
   }
 
   useEffect(() => {
@@ -112,7 +119,6 @@ export default function ProductForm({ initialData, onSuccess }) {
       reset();
     }
   }, [isSubmitSuccessful, reset])
-
   //on Submit
   const onSubmit = async (data) => {
     // setIsSubmitting(true);
@@ -120,6 +126,7 @@ export default function ProductForm({ initialData, onSuccess }) {
 
     // Append all form fields (except files)
     Object.entries(data).forEach(([key, value]) => {
+
       if (value === undefined || value === null) return;
 
       if (typeof value === 'object' && value !== null) {
@@ -147,6 +154,7 @@ export default function ProductForm({ initialData, onSuccess }) {
     // Submit via Axios ( with my Axios Interceptor)
     console.log([...formData]);
     try {
+
       const response = await api.post('/products', formData,
         {
           headers: {
@@ -194,7 +202,7 @@ export default function ProductForm({ initialData, onSuccess }) {
             )}
           </div>
           <div className='h-10'>
-            <label htmlFor='sku'>SKU</label>
+            <label for='sku'>SKU</label>
             <br />
             <input
               {...register('sku')}
@@ -205,18 +213,19 @@ export default function ProductForm({ initialData, onSuccess }) {
             />
           </div>
           <div className=''>
-            <label htmlFor='short'>Short Describtion</label>
+            <label for='short'>Short Describtion</label>
             <br />
             <textarea
               name='description.short'
               {...register('description.short', { maxLength: 200 })}
+
               type='text'
               className='min-w-full mt-2 px-2 min-h-30 border rounded-md border-amber-950'
               placeholder='Short Description'
             ></textarea>
           </div>
           <div className=''>
-            <label htmlFor='detailed'>Describtion</label>
+            <label for='detailed'>Describtion</label>
             <br />
             <textarea
               name='description.detailed'
@@ -230,6 +239,7 @@ export default function ProductForm({ initialData, onSuccess }) {
 
 
         {/* Pricing */}
+
         <div className='text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           <div className='flex sm:w-1 lg:min-w-1/2 gap-10 h-10'>
             <input type='number'
@@ -248,6 +258,7 @@ export default function ProductForm({ initialData, onSuccess }) {
                 ))
               }
             </select>
+
           </div>
         </div>
 
@@ -255,9 +266,10 @@ export default function ProductForm({ initialData, onSuccess }) {
         {/*Dimensions fields */}
         <div className='grid md:grid-cols-4 grid-col-11 gap-10 text-sm lg:text-md bg-white p-5 pb-20 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           <label className='col-span-full'>Dimension</label>
+
           {['length', 'width', 'thickness'].map(d => (
-            <div className='h-10' key={d}>
-              <label htmlFor={`dimensions.${d}`}>{d}</label>
+            <div className='h-10'>
+              <label for={`dimensions.${d}`}>{d}</label>
               <br />
               <input
                 {...register(`dimensions.${d}`, { valueAsNumber: true })}
@@ -270,7 +282,7 @@ export default function ProductForm({ initialData, onSuccess }) {
             </div>
           ))}
           <div className='h-10'>
-            <label htmlFor='dimensions.unit'>unit</label>
+            <label for='dimensions.unit'>unit</label>
             <br />
             <select
               name='dimensions.unit'
@@ -361,7 +373,7 @@ export default function ProductForm({ initialData, onSuccess }) {
             >
               <input
                 placeholder='Attribute Name'
-                {...register(`dynamicAttributes.${index}.name`)}
+                {...register(`dynamicAttributes.${index}.key`)}
                 className='border px-2 py-1 rounded'
               />
               <select
@@ -390,12 +402,17 @@ export default function ProductForm({ initialData, onSuccess }) {
               >
                 Remove
               </button>
+
+              {/* Error messages */}
+              {errors.dynamicAttributes?.[index]?.key && (
+                <p>{errors.dynamicAttributes[index].key.message}</p>
+              )}
             </div>
           ))}
           <button
             type='button'
             onClick={() =>
-              appendAttribute({ name: '', dataType: 'string', value: '' })
+              appendAttribute({ key: '', dataType: 'string', value: '' })
             }
             className='px-2 py-1 bg-blue-500 text-white rounded w-fit'
           >
@@ -403,7 +420,6 @@ export default function ProductForm({ initialData, onSuccess }) {
           </button>
         </div>
 
-        {/* File uploads */}
         <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'>
           {['primary', 'gallery', 'technical', 'roomScenes'].map((type) => (
             <div key={type}>
@@ -447,6 +463,10 @@ export default function ProductForm({ initialData, onSuccess }) {
           ))}
         </div>
 
+
+        {/* <div className='grid lg:grid-cols-2 sm:grid-cols-1 gap-10 text-sm lg:text-md bg-white p-10 rounded-2xl drop-shadow-2xl shadow-blue-950'></div> */}
+
+
         <div className='relative min-w-full border text-right'>
           <button
             type='submit'
@@ -457,6 +477,7 @@ export default function ProductForm({ initialData, onSuccess }) {
             {isSubmitted ? "Submitting..." : "Submit"}
           </button>
         </div>
+
       </form>
 
       {isSubmitSuccessful && (
