@@ -24,10 +24,9 @@ import AdminLayout from './layout/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ResetPassword from './pages/auth/ResetPassword'
 import VerifyOtp from './pages/auth/VerifyOtp'
-import AddProduct from './pages/admin/AddProduct'
 import TestForm from './components/testForm'
 
-import ProductForm from './components/admin/productFom2'
+import ProductForm from './components/admin/productFom.jsx'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -39,7 +38,6 @@ function App() {
       <Navbar />
       <Routes>
 
-        <Route path='/form' element={<LocalizationProvider dateAdapter={AdapterDayjs}><ProductForm/></LocalizationProvider>}/>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
@@ -62,7 +60,8 @@ function App() {
 
         {/* Admin Pages */}
         <Route path="/admin" element={<PrivateAdminRoute> <AdminLayout/> </PrivateAdminRoute>}>
-          <Route path='add-product' element={ <AddProduct /> } />
+          <Route path='add-product' element={<LocalizationProvider dateAdapter={AdapterDayjs}><ProductForm/></LocalizationProvider>}/>
+          {/* <Route path='add-product' element={ <AddProduct /> } /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

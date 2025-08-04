@@ -208,6 +208,8 @@ productSchema.pre('save', function(next) {
   } else {
     this.inventory.status = 'in-stock';
   }
+
+
   next();
 });
 
@@ -233,6 +235,8 @@ productSchema.pre('save', async function(next) {
     this.seo = this.seo || {};
     this.seo.slug = uniqueSlug;
   }
+
+  
   next();
 });
 
