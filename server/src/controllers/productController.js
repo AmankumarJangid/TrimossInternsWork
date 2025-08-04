@@ -94,10 +94,19 @@ export const getProduct = async (req, res) => {
 
  // extract images from the uploaded urls 
 // Utility to pull images from req.files exactly like creation
+// 🔍 Helper to cast dynamic values
+function parseDynamicValue(value, dataType) {
+  if (dataType === 'number') return Number(value);
+  if (dataType === 'boolean') return value === 'true' || value === true;
+  if (dataType === 'date') return new Date(value);
+  return value; // treat as string or unknown
+}
 
 
 export const createProduct = async (req, res) => {
   try {
+
+    console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
 
@@ -117,8 +126,9 @@ export const createProduct = async (req, res) => {
     };
 
     console.log( "isFiles available ", files!= undefined)
-    const product = new Product({
+    const sanitizeInput= {
       ...req.body,
+
        images: {
         primary: extractImages('primary'),
         gallery: extractImages('gallery'),
@@ -126,8 +136,9 @@ export const createProduct = async (req, res) => {
         roomScenes: extractImages('roomScenes')
       },
       dynamicAttributes: req.body.dynamicAttributes || []
-    });
+    }
 
+    const product = new Product(sanitizeInput);
     await product.save();
     res.status(201).json({ success: true, message: 'Product created successfully', data: product });
   } catch (error) {
@@ -135,7 +146,7 @@ export const createProduct = async (req, res) => {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(400).json({ success: false, message: `${field} already exists` });
     }
-    res.status(500).json({ success: false, message: 'Error creating product', error: error.message });
+    res.status(500).json({ success: false, message: `Error creating product ${error}`, error: error.message });
   }
 };
 

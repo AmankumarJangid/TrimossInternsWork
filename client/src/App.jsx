@@ -12,19 +12,11 @@ import AddressForm from "./components/addressAndPaymentForm";
 import OrderConfirmed from "./pages/OrderConfirmed";
 // import { PAYPAL_CLIENT_ID } from "../config";
 // import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-<<<<<<< HEAD
-import useAuthCheck from "./utils/useAuthCheck";
-import PrivateAdminRoute from "./routes/privateAdminRoutes";
-import NotFound from "./pages/pageNotFound404";
-import AdminLayout from "./layout/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import ResetPassword from "./pages/auth/ResetPassword";
-import VerifyOtp from "./pages/auth/VerifyOtp";
+
 import MosaicCollectionPage from "./pages/ProductListing/ProductList";
 import DynamicFormPage from "./pages/DynamicForm/DynamicFormPage";
 import BusinessUserForm from "./pages/BusinessUser/BusinessUserForm";
 import UserTypeSelector from "./pages/UserTypeSelector";
-=======
 import useAuthCheck from './utils/useAuthCheck'
 import PrivateAdminRoute from './routes/privateAdminRoutes'
 import NotFound from './pages/pageNotFound404'
@@ -32,13 +24,11 @@ import AdminLayout from './layout/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ResetPassword from './pages/auth/ResetPassword'
 import VerifyOtp from './pages/auth/VerifyOtp'
-import AddProduct from './pages/admin/AddProduct'
 import TestForm from './components/testForm'
 
-import ProductForm from './components/admin/productFom2'
+import ProductForm from './components/admin/productFom.jsx'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
->>>>>>> 740a023d33a73964b8bab18c77a7aaf3e9afc362
 
 function App() {
   useAuthCheck();
@@ -47,36 +37,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-<<<<<<< HEAD
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/cards" element={<ProductCards />} />
-        <Route path="/shop" element={<ShopPage />} />
-        <Route path="/product-detail" element={<ProductDetail />} />
-        <Route path="/address" element={<AddressForm />} />{" "}
-        {/* Pass your actual product price /*productPrice={1}*/}
-        <Route path="/order-confirmed" element={<OrderConfirmed />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/productlist" element={<MosaicCollectionPage />} />
-        <Route path="/dynamic" element={<DynamicFormPage />} />
-        <Route path="/business" element={<BusinessUserForm />} />
-        <Route path="/usertype" element={<UserTypeSelector/>}/>
 
-        <Route
-          path="/admin"
-          element={
-            <PrivateAdminRoute>
-              {" "}
-              <AdminDashboard />{" "}
-            </PrivateAdminRoute>
-          }
-        >
-          {/* <Route path='add-product' element={ <AddProduct /> } /> */}
-=======
-        <Route path='/form' element={<LocalizationProvider dateAdapter={AdapterDayjs}><ProductForm/></LocalizationProvider>}/>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
@@ -91,12 +52,16 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword/>}/>
         <Route path='/test-form' element={<TestForm/>}/>
 
+        <Route path="/productlist" element={<MosaicCollectionPage />} />
+        <Route path="/dynamic" element={<DynamicFormPage />} />
+        <Route path="/business" element={<BusinessUserForm />} />
+        <Route path="/usertype" element={<UserTypeSelector/>}/>
         
 
         {/* Admin Pages */}
         <Route path="/admin" element={<PrivateAdminRoute> <AdminLayout/> </PrivateAdminRoute>}>
-          <Route path='add-product' element={ <AddProduct /> } />
->>>>>>> 740a023d33a73964b8bab18c77a7aaf3e9afc362
+          <Route path='add-product' element={<LocalizationProvider dateAdapter={AdapterDayjs}><ProductForm/></LocalizationProvider>}/>
+          {/* <Route path='add-product' element={ <AddProduct /> } /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

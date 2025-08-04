@@ -38,12 +38,15 @@ export const validateCreateProduct = [
   // Dimensions
   body('dimensions.length')
     .notEmpty().withMessage('Length is required')
+    .toFloat()
     .isFloat({ min: 0 }).withMessage('Length must be a non-negative number'),
   body('dimensions.width')
     .notEmpty().withMessage('Width is required')
+    .toFloat()
     .isFloat({ min: 0 }).withMessage('Width must be a non-negative number'),
   body('dimensions.thickness')
     .optional()
+    .toFloat()
     .isFloat({ min: 0 }).withMessage('Thickness must be a non-negative number'),
   body('dimensions.unit')
     .optional()
@@ -63,20 +66,24 @@ export const validateCreateProduct = [
   // Pricing
   body('pricing.basePrice')
     .notEmpty().withMessage('Base price is required')
+    .toFloat()
     .isFloat({ min: 0 }).withMessage('Base price must be non-negative'),
   body('pricing.currency')
     .optional()
     .isIn(['USD', 'EUR', 'GBP', 'INR']).withMessage('Invalid currency'),
   body('pricing.minimumOrderQuantity')
     .optional()
+    .toInt()
     .isInt({ min: 1 }).withMessage('Minimum order quantity must be at least 1'),
 
   // Inventory
   body('inventory.quantity')
     .notEmpty().withMessage('Inventory quantity is required')
+    .toInt()
     .isInt({ min: 0 }).withMessage('Inventory quantity must be a non-negative integer'),
   body('inventory.lowStockThreshold')
     .optional()
+    .toInt()
     .isInt({ min: 0 }).withMessage('Low stock threshold must be a non-negative integer'),
 
   // Dynamic attributes
@@ -96,6 +103,7 @@ export const validateCreateProduct = [
     .isString(),
   body('supplier.leadTime')
     .optional()
+    .toInt()
     .isInt({ min: 0 }).withMessage('Lead time must be non-negative'),
 
   // SEO
@@ -109,11 +117,15 @@ export const validateCreateProduct = [
 
   // Flags
   body('isActive')
-    .optional()
-    .isBoolean().withMessage('isActive must be boolean'),
-  body('isFeatured')
-    .optional()
-    .isBoolean().withMessage('isFeatured must be boolean')
+  .optional()
+  .toBoolean() // 👈 this converts 'true'/'false' to boolean
+  .isBoolean().withMessage('isActive must be boolean'),
+
+body('isFeatured')
+  .optional()
+  .toBoolean()
+  .isBoolean().withMessage('isFeatured must be boolean'),
+
 ];
 
 // Validation for updating a product

@@ -17,6 +17,7 @@ export default function UserTypeSelector() {
 
   const handleSubmit = () => {
     if (userType && name) {
+      console.log(userType);
       setSubmitted(true);
     }
   };
