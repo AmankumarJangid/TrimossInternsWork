@@ -17,7 +17,7 @@ import api from '../../utils/axiosInterceptor'
 export default function ProductForm({ initialData, onSuccess }) {
 
   const token = useSelector(state => state.auth.token)
-  // const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [files, setFiles] = useState({
     primary: null,
     gallery: [],
@@ -122,6 +122,7 @@ export default function ProductForm({ initialData, onSuccess }) {
   //on Submit
   const onSubmit = async (data) => {
     // setIsSubmitting(true);
+    setIsSubmitting(true);
     const formData = new FormData();
 
     // Append all form fields (except files)
@@ -169,8 +170,12 @@ export default function ProductForm({ initialData, onSuccess }) {
     catch (error) {
       alert(error.response.data.message);
       console.error("Upload Failed ", error.response.data.message);
+
     }
 
+    finally{
+      setIsSubmitting(false);
+    }
     // setIsSubmitting(false);
   }
 
@@ -471,10 +476,10 @@ export default function ProductForm({ initialData, onSuccess }) {
           <button
             type='submit'
             varient='contained'
-            disabled={isSubmitted}
+            disabled={isSubmitting}
             className='px-4 py-1  border m-4 bg-blue-400 rounded-md text-white h-10 w-30 drop-shadow-2xl '
           >
-            {isSubmitted ? "Submitting..." : "Submit"}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
 
