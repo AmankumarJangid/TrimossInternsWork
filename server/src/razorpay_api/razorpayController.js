@@ -21,6 +21,8 @@ export const createRazorPayOrder = async (req, res) => {
       shipping
     } = req.body;
 
+    console.log(req.body);
+
     if (!amount || amount < 1) {
       return res.status(400).json({
         success: false,
@@ -36,6 +38,7 @@ export const createRazorPayOrder = async (req, res) => {
       payment_capture: 1 // Auto capture payment
     });
 
+    
     // Create order in database with amount in dollars/rupees
     const order = new Order({
       user: userId,

@@ -230,7 +230,7 @@ class FedExService {
               description: item.description,
               countryOfManufacture: item.countryOfManufacture,
               quantity: item.quantity,
-              quantityUnits: item.quantityUnits || 'PCS',
+              quantityUnits: 'PCS',
               unitPrice: {
                 currency: item.unitPrice.currency,
                 amount: item.unitPrice.amount
@@ -240,7 +240,7 @@ class FedExService {
                 amount: item.customsValue.amount
               },
               weight: {
-                units: 'LB',
+                units: item.unit,
                 value: item.weight
               }
             }))
@@ -256,7 +256,7 @@ class FedExService {
                 length: pkg.dimensions.length,
                 width: pkg.dimensions.width,
                 height: pkg.dimensions.height,
-                units: 'IN'
+                units: pkg.dimensions.units || "IN"
               }
             })
           )

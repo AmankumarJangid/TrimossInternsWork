@@ -6,7 +6,7 @@ import image8 from "../assets/images/image-8.jpg";
 export default function HandMirrorPage() {
   const [selectedType, setSelectedType] = useState("Type 1");
   const [price, setPrice] = useState(1000);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("INR");
   const navigate = useNavigate();
 
   const types = ["Type 1", "Type 2", "Type 3", "TYPE 4"];

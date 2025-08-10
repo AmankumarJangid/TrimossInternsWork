@@ -54,13 +54,14 @@ export const confirmFedexShipment = async (req, res) => {
       return res.status(400).json({ message: "Shipment already confirmed" });
     }
 
+    console.log(JSON.stringify(order.shipping));
     const shipmentData = {
       shipper: {
         name: "Warehouse Admin",
-        phone: "0000000000",
-        company: "Your Company",
+        phone: "7877650647",
+        company: "Trimoss India",
         address: {
-          streetLines: ["Your warehouse address"],
+          streetLines: ["Ratanada Jodhpur"],
           city: "Jodhpur",
           state: "RJ",
           postalCode: "342001",
@@ -74,9 +75,9 @@ export const confirmFedexShipment = async (req, res) => {
         address: {
           streetLines: [order.shipping.address.street],
           city: order.shipping.address.city,
-          state: order.shipping.address.state,
+          state: order.shipping.address.stateCode,
           postalCode: order.shipping.address.postalCode,
-          countryCode: order.shipping.address.country,
+          countryCode: order.shipping.address.countryCode,
           residential: true,
         },
       },
@@ -114,7 +115,9 @@ export const confirmFedexShipment = async (req, res) => {
     await order.save();
     res.status(200).json({ success: true, data: order.fedex });
   } catch (error) {
+    console.log(error?.response ? error.response.data : error.message);
     res.status(500).json({ message: error.message });
+
   }
 };
 

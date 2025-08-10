@@ -39,7 +39,6 @@ export default function AddressForm() {
     },
   });
 
-
   const navigate = useNavigate();
 
   // eslint-disable-next-line no-unused-vars
@@ -55,6 +54,27 @@ export default function AddressForm() {
   const [showPaymentButton, setShowPaymentButton] = useState(false);
   const [dbOrderId, setDbOrderId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("PayPal");
+
+  const products = [{
+            product: state?._id || "handmade-small-bag",
+            pricing : {
+              basePrice : state?.price,
+              currency : state?.currency
+            },
+            quantity: 1,
+            weight : {
+              value : state?.weight?.value || "1",
+              unit : state?.weight?.unit || "KG"
+            },
+
+            dimensions : {
+              length : state?.dimensions?.length || 4,
+              width : state?.dimensions?.width || 3,
+              height : state?.dimensions?.height || 2,
+              units : state?.dimensions?.units || "IN" 
+            }
+
+          }];
 
   //country code selector 
   // eslint-disable-next-line no-unused-vars
@@ -95,8 +115,16 @@ export default function AddressForm() {
         },
         packages: [
           {
-            weight: { units: "KG", value: 0.4 },
-            dimensions: { length: 4, width: 3, height: 2, units: "IN" },
+            weight: { 
+              units: state?.weight?.units || "KG", 
+              value: state?.weight?.vlaue || 0.4
+            },
+            dimensions: { 
+              length: state?.dimensions?.length || 4, 
+              width: state?.dimensions?.width || 3, 
+              height: state?.dimensions?.height || 2, 
+              units: "IN" 
+            },
           },
         ],
         serviceType:
@@ -117,8 +145,16 @@ export default function AddressForm() {
           countryCode: data.recipient.address.countryCode.toUpperCase(),
         },
         packages: [{
-          weight: 0.4,
-          dimensions: { length: 10, width: 8, height: 5 }, // cm
+          weight: { 
+              units: state?.weight?.units || "KG", 
+              value: state?.weight?.vlaue || 0.4
+            },
+            dimensions: { 
+              length: state?.dimensions?.length || 4, 
+              width: state?.dimensions?.width || 3, 
+              height: state?.dimensions?.height || 2, 
+              units: "IN" 
+            }, // cm
         }],
       };
 
@@ -157,9 +193,10 @@ export default function AddressForm() {
       } else if (results[1].status === 'rejected') {
         console.error("DHL API Error:", results[1].reason?.response?.data || results[1].reason.message);
       }
-
       setShippingOptions(availableOptions);
       setOrderDetails(data);
+      console.log("submit Order Details", orderDetails);
+
       setShowPaymentButton(false); // Hide payment buttons until a shipping option is selected
 
     } catch (err) {
@@ -173,14 +210,8 @@ export default function AddressForm() {
       const response = await api.post(`/paypal/create-order`, {
         amount: totalAmount.toFixed(2).toString(),
         currency: state?.currency,
-        userId: "dummy-user-id", // Replace or fetch via Redux
-        items: [
-          {
-            product: "handmade-small-bag",
-            price: state?.price,
-            quantity: 1,
-          },
-        ],
+        userId: user._id, // Replace or fetch via Redux
+        items: products,
       });
 
       setDbOrderId(response.data?.dbOrderId);
@@ -237,25 +268,26 @@ export default function AddressForm() {
   };
 
   const handleRazorpayPayment = async () => {
+      
     try {
+      console.log( "handleRazorpayPayment: Order Details : \n" , JSON.stringify(orderDetails));
       const orderResponse = await createRazorPayOrder({
         totalAmount,
         userId: user._id,
         currency: state?.currency,
-        products: [
-          {
-            product: "handmade-small-bag",
-            price: state?.price,
-            quantity: 1,
-          },
-        ],
+        products: products,
         shipping: {
           name: orderDetails.recipient.name,
           phone: orderDetails.recipient.phone,
           email: orderDetails.recipient.email,
-          address: orderDetails.recipient.address,
+          address:{
+            ...orderDetails.recipient.address,
+          } ,
+
         },
       });
+
+      
 
       await initializeRazorpayPayment(
         orderResponse,
@@ -286,7 +318,7 @@ export default function AddressForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-        {user?.role === "admin" && (
+        {user?.role === "" && (
           <>
             <h2 className="text-xl font-bold">Shipper Info</h2>
             <h2 className="text-xl font-bold">Recipient Info</h2>
@@ -483,7 +515,7 @@ export default function AddressForm() {
             {paymentMethod === "PayPal" && (
               <PayPalScriptProvider
                 options={{
-                  "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
+                  "client-id": import.meta.env.VITE_APP_PAYPAL_CLIENT_ID,
                   currency: state?.currency || "USD",
                   intent: "capture",
                 }}

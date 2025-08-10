@@ -55,7 +55,77 @@ class DhlService {
 
   async getRates(shipmentData) {
     try {
+      console.log( shipmentData);
       const payload = {
+        "customerDetails": {
+          "shipperDetails": {
+            "postalCode": "110017",
+            "cityName": "DELHI",
+            "addressLine1": "Blk 6 Lock Rd",
+            "addressLine2": "02-10 Gillman Barracks",
+            "addressLine3": "Barrack Street",
+            "countryCode": "IN"
+          },
+          "receiverDetails": {
+            "postalCode": "75001",
+            "cityName": "HONG KONG",
+            "addressLine1": "9",
+            "addressLine2": "Rue Simart",
+            "addressLine3": "test",
+            "countryCode": "HK"
+          }
+        },
+        "accounts": [
+          {
+            "typeCode": "shipper",
+            "number": "539998704"
+          }
+        ],
+        "productsAndServices": [
+          {
+            "productCode": "P",
+            "localProductCode": "P"
+          }
+        ],
+        "payerCountryCode": "IN",
+        "plannedShippingDateAndTime": "2025-05-05T13:00:00GMT+05:30",
+        "unitOfMeasurement": "metric",
+        "isCustomsDeclarable": true,
+        "monetaryAmount": [
+          {
+            "typeCode": "declaredValue",
+            "value": 100,
+            "currency": "INR"
+          }
+        ],
+        "estimatedDeliveryDate": {
+          "isRequested": true,
+          "typeCode": "QDDC"
+        },
+        //  "getAdditionalInformation": [
+        //    {
+        //      "typeCode": "allValueAddedServices",
+        //      "isRequested": true
+        //    }
+        //  ],
+        //  "returnStandardProductsOnly": false,
+        //  "nextBusinessDay": true,
+        //  "productTypeCode": "all",
+        "packages": [
+          {
+            //     "typeCode": "3BX",
+            "weight": 0.5,
+            "dimensions": {
+              "length": 121,
+              "width": 20,
+              "height": 30
+            }
+          }
+        ]
+      };
+
+  
+      const payload2 = {
         shipperDetails: {
           postalCode: shipmentData.origin.postalCode,
           cityName: shipmentData.origin.city,

@@ -1,5 +1,26 @@
 import mongoose from "mongoose";
 
+const dimensionSchema = new mongoose.Schema({
+  length: { type: Number, required: true, min: 0 },
+  width: { type: Number, required: true, min: 0 },
+  height: { type: Number, min: 0 },
+  units: {
+    type: String,
+    enum: ['MM', 'CM', 'IN'],
+    default: 'MM'
+  }
+}, { _id: false });
+
+
+const priceSchema = new mongoose.Schema({
+  basePrice: { type: Number, required: true, min: 0 },
+  currency: {
+    type: String,
+    default: 'USD',
+    enum: ['USD', 'EUR', 'GBP', 'INR']
+  }
+}, { _id: false });
+
 const orderSchema = new mongoose.Schema({
   user: {
     // type: mongoose.Schema.Types.ObjectId,
@@ -16,7 +37,19 @@ const orderSchema = new mongoose.Schema({
         required: true,
       },
       quantity: { type: Number, required: true },
-      price: { type: Number, required: true },
+      pricing: {
+        type : priceSchema,
+        required : true,
+      },
+
+      weight : {
+        value : {type : Number, required : true, default : 1},
+        unit : {type : String , enum : ['KG' , 'LB'], required : true , default : 'KG'}
+      },
+      dimensions : {
+        type : dimensionSchema,
+        required : true
+      }
     },
   ],
   payment: {
@@ -33,8 +66,10 @@ const orderSchema = new mongoose.Schema({
     address: {
       street: String,
       city: String,
+      stateCode : String,
       state: String,
-      country: String,
+      countryCode: String,
+      country : String,
       postalCode: String,
     },
   },

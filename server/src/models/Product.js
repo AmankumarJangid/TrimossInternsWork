@@ -4,11 +4,11 @@ import mongoose from 'mongoose';
 const dimensionSchema = new mongoose.Schema({
   length: { type: Number, required: true, min: 0 },
   width: { type: Number, required: true, min: 0 },
-  thickness: { type: Number, min: 0 },
-  unit: {
+  height: { type: Number, min: 0 },
+  units: {
     type: String,
-    enum: ['mm', 'cm', 'inch'],
-    default: 'mm'
+    enum: ['MM', 'CM', 'IN'],
+    default: 'MM'
   }
 }, { _id: false });
 
